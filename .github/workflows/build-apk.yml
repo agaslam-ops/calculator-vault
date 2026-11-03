@@ -35,6 +35,13 @@ jobs:
         npx cap add android
         npx cap sync android
 
+    - name: Inject Android Permissions (Camera & Media Storage)
+      run: |
+        MANIFEST="android/app/src/main/AndroidManifest.xml"
+        # পারমিশনগুলো AndroidManifest ফাইলে বাধ্যতামূলকভাবে যুক্ত করা
+        PERMS='<uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\n    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n'
+        sed -i "/<application/i $PERMS" "$MANIFEST"
+
     - name: Force Replace Android App Icons
       run: |
         RES_DIR="android/app/src/main/res"
