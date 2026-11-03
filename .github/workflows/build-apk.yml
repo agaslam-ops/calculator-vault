@@ -31,9 +31,19 @@ jobs:
         cp manifest.json www/
         npm init -y
         npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
-        npx cap init "Calculator" "com.asroxa.calculatorvault" --web-dir "www"
+        npx cap init "Calculator" "com.sec.android.app.popupcalculator" --web-dir "www"
         npx cap add android
         npx cap sync android
+
+    - name: Force Replace Android App Icons
+      run: |
+        RES_DIR="android/app/src/main/res"
+        for dir in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+          mkdir -p "$RES_DIR/$dir"
+          cp -f icon.png "$RES_DIR/$dir/ic_launcher.png"
+          cp -f icon.png "$RES_DIR/$dir/ic_launcher_round.png"
+          cp -f icon.png "$RES_DIR/$dir/ic_launcher_foreground.png"
+        done
 
     - name: Build APK with Gradle
       run: |
