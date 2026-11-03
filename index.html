@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Calculator</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #121315;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #app-viewport {
+            width: 100vw;
+            height: 100vh;
+            max-width: 480px;
+            background: #23272a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        /* VINTAGE CASIO CALCULATOR */
+        #calculator-screen {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #323639 0%, #202326 100%);
+            padding: 16px 20px 24px 20px;
+            justify-content: space-between;
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            margin-bottom: 8px;
+        }
+
+        .brand-text {
+            color: #b0b5b9;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .model-text {
+            color: #7b8288;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .solar-panel {
+            background: #2b1810;
+            border: 1px solid #1a100a;
+            border-radius: 4px;
+            width: 70px;
+            height: 18px;
+            display: flex;
+            gap: 4px;
+            padding: 2px 4px;
+        }
+
+        .solar-cell {
+            flex: 1;
+            background: #42261a;
+            border-radius: 1px;
+        }
+
+        /* LCD DISPLAY */
+        .lcd-container {
+            background: #9ea78c;
+            border: 4px solid #18191a;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.6);
+            border-radius: 8px;
+            padding: 12px 16px;
+            position: relative;
+            cursor: pointer;
+            touch-action: none;
+            margin-bottom: 16px;
+        }
+
+        .lcd-sub {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: rgba(35, 45, 30, 0.6);
+            text-align: right;
+            height: 16px;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        .lcd-main {
+            font-family: 'Courier New', monospace;
+            font-size: 44px;
+            font-weight: 900;
+            color: #1a2316;
+            text-align: right;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.1;
+        }
+
+        .hold-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: #ff5722;
+            width: 0%;
+            transition: width 0.1s linear;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* KEYPAD */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            flex: 1;
+        }
+
+        .calc-btn {
+            background: linear-gradient(180deg, #42474b 0%, #2f3438 100%);
+            border: 1px solid #1b1d1f;
+            border-radius: 10px;
+            color: #f1f3f5;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 0 #181a1b, 0 5px 6px rgba(0,0,0,0.4);
+            cursor: pointer;
+            active: transform scale(0.96);
+            touch-action: manipulation;
+        }
+
+        .calc-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #181a1b;
+        }
+
+        .calc-btn.op {
+            background: linear-gradient(180deg, #d38128 0%, #a45a0b 100%);
+            box-shadow: 0 4px 0 #6e3a05, 0 5px 6px rgba(0,0,0,0.4);
+            color: #fff;
+        }
+
+        .calc-btn.clear {
+            background: linear-gradient(180deg, #d94336 0%, #aa2b20 100%);
+            box-shadow: 0 4px 0 #6d170f, 0 5px 6px rgba(0,0,0,0.4);
+            color: #fff;
+        }
+
+        .calc-btn.equal {
+            background: linear-gradient(180deg, #e0e4e7 0%, #bcc3c8 100%);
+            box-shadow: 0 4px 0 #7b8389, 0 5px 6px rgba(0,0,0,0.4);
+            color: #1b1e20;
+        }
+
+        /* MODAL DIALOGS */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #25282c;
+            border: 1px solid #3c4046;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 320px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+        }
+
+        .modal-card h3 {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .modal-card p {
+            color: #9aa0a6;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .numeric-pin-input {
+            width: 180px;
+            height: 48px;
+            background: #16181a;
+            border: 2px solid #555c63;
+            border-radius: 10px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 12px;
+            outline: none;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .numeric-pin-input:focus {
+            border-color: #d38128;
+        }
+
+        .modal-btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .m-btn {
+            flex: 1;
+            padding: 12px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .m-btn-cancel {
+            background: #3a3f44;
+            color: #cfd4d8;
+        }
+
+        .m-btn-confirm {
+            background: #d38128;
+            color: #fff;
+        }
+
+        /* VAULT CONTAINER */
+        #vault-screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #14171a;
+            color: #fff;
+        }
+
+        .vault-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #1d2126;
+            border-bottom: 1px solid #2d3238;
+        }
+
+        .vault-title {
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panic-btn {
+            background: #d94336;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vault-tabs {
+            display: flex;
+            background: #181b1f;
+            border-bottom: 1px solid #282c32;
+        }
+
+        .v-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #889098;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .v-tab.active {
+            color: #d38128;
+            border-bottom-color: #d38128;
+        }
+
+        .vault-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .content-tab {
+            display: none;
+        }
+
+        .content-tab.active {
+            display: block;
+        }
+
+        .grid-media {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .media-item {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #25282d;
+            border: 1px solid #33383f;
+        }
+
+        .add-action-btn {
+            width: 100%;
+            padding: 12px;
+            background: #22272d;
+            border: 1px dashed #4b525a;
+            border-radius: 8px;
+            color: #b3bac1;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .contact-card, .note-card {
+            background: #22262b;
+            border: 1px solid #2e333a;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-info h4, .note-card h4 {
+            font-size: 15px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .contact-info p, .note-card p {
+            font-size: 13px;
+            color: #8c939b;
+        }
+
+        .wa-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-viewport">
+
+    <!-- CALCULATOR -->
+    <div id="calculator-screen">
+        <div>
+            <div class="calc-header">
+                <div>
+                    <div class="brand-text">ASROXA SOFTWARE</div>
+                    <div class="model-text">RETRO FX-80VAULT</div>
+                </div>
+                <div class="solar-panel">
+                    <div class="solar-cell"></div>
+                    <div class="solar-cell"></div>
+                    <div class="solar-cell"></div>
+                    <div class="solar-cell"></div>
+                </div>
+            </div>
+
+            <div class="lcd-container" id="lcdDisplay">
+                <div class="lcd-sub" id="calcHistory"></div>
+                <div class="lcd-main" id="calcValue">0</div>
+                <div class="hold-progress-bar" id="holdBar"></div>
+            </div>
+        </div>
+
+        <div class="keypad">
+            <button class="calc-btn clear" onclick="clearCalc()">C</button>
+            <button class="calc-btn op" onclick="pressOp('/')">÷</button>
+            <button class="calc-btn op" onclick="pressOp('*')">×</button>
+            <button class="calc-btn clear" onclick="deleteLast()">DEL</button>
+
+            <button class="calc-btn" onclick="pressNum('7')">7</button>
+            <button class="calc-btn" onclick="pressNum('8')">8</button>
+            <button class="calc-btn" onclick="pressNum('9')">9</button>
+            <button class="calc-btn op" onclick="pressOp('-')">−</button>
+
+            <button class="calc-btn" onclick="pressNum('4')">4</button>
+            <button class="calc-btn" onclick="pressNum('5')">5</button>
+            <button class="calc-btn" onclick="pressNum('6')">6</button>
+            <button class="calc-btn op" onclick="pressOp('+')">+</button>
+
+            <button class="calc-btn" onclick="pressNum('1')">1</button>
+            <button class="calc-btn" onclick="pressNum('2')">2</button>
+            <button class="calc-btn" onclick="pressNum('3')">3</button>
+            <button class="calc-btn op" onclick="pressOp('%')">%</button>
+
+            <button class="calc-btn" onclick="pressNum('0')">0</button>
+            <button class="calc-btn" onclick="pressDot()">.</button>
+            <button class="calc-btn" onclick="pressNum('00')">00</button>
+            <button class="calc-btn equal" onclick="calcEquals()">=</button>
+        </div>
+    </div>
+
+    <!-- PIN MODAL -->
+    <div class="modal-overlay" id="pinModal">
+        <div class="modal-card">
+            <h3>Enter Passcode</h3>
+            <p>Enter 4-digit security code to proceed</p>
+            <input type="password" id="vaultPinInput" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
+            <div class="modal-btn-row">
+                <button class="m-btn m-btn-cancel" onclick="closePinModal()">Cancel</button>
+                <button class="m-btn m-btn-confirm" onclick="verifyPin()">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIRST TIME SETUP MODAL -->
+    <div class="modal-overlay" id="setupModal">
+        <div class="modal-card">
+            <h3>First-Time Vault Setup</h3>
+            <p>Set your confidential and decoy passcodes</p>
+            <label style="color:#aaa; font-size:12px; display:block; text-align:left; margin-bottom:4px;">Master Vault PIN (Private):</label>
+            <input type="password" id="newMasterPin" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="6079">
+            <label style="color:#aaa; font-size:12px; display:block; text-align:left; margin-bottom:4px;">Decoy Vault PIN (Harmless):</label>
+            <input type="password" id="newDecoyPin" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="2665">
+            <button class="m-btn m-btn-confirm" style="width:100%;" onclick="saveInitialPins()">Save & Initialize</button>
+        </div>
+    </div>
+
+    <!-- VAULT INTERFACE -->
+    <div id="vault-screen">
+        <div class="vault-nav">
+            <div class="vault-title" id="vaultHeaderTitle">
+                🔒 Safe Storage
+            </div>
+            <button class="panic-btn" onclick="lockVault()">LOCK</button>
+        </div>
+
+        <div class="vault-tabs">
+            <div class="v-tab active" onclick="switchTab('photos')">Photos</div>
+            <div class="v-tab" onclick="switchTab('videos')">Videos</div>
+            <div class="v-tab" onclick="switchTab('contacts')">Contacts</div>
+            <div class="v-tab" onclick="switchTab('notes')">Notes</div>
+            <div class="v-tab" onclick="switchTab('settings')">Settings</div>
+        </div>
+
+        <div class="vault-content">
+            <!-- PHOTOS -->
+            <div id="tab-photos" class="content-tab active">
+                <label class="add-action-btn">
+                    📷 Import Photo
+                    <input type="file" accept="image/*" style="display:none;" onchange="importMedia(this, 'photo')">
+                </label>
+                <div class="grid-media" id="photosGrid"></div>
+            </div>
+
+            <!-- VIDEOS -->
+            <div id="tab-videos" class="content-tab">
+                <label class="add-action-btn">
+                    🎬 Import Video
+                    <input type="file" accept="video/*" style="display:none;" onchange="importMedia(this, 'video')">
+                </label>
+                <div class="grid-media" id="videosGrid"></div>
+            </div>
+
+            <!-- CONTACTS -->
+            <div id="tab-contacts" class="content-tab">
+                <div class="add-action-btn" onclick="addNewContact()">+ Add Private Contact</div>
+                <div id="contactsList" style="margin-top:12px;"></div>
+            </div>
+
+            <!-- NOTES -->
+            <div id="tab-notes" class="content-tab">
+                <div class="add-action-btn" onclick="addNewNote()">+ Add Secret Note</div>
+                <div id="notesList" style="margin-top:12px;"></div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div id="tab-settings" class="content-tab">
+                <div class="contact-card" style="flex-direction:column; align-items:flex-start; gap:12px;">
+                    <h4>Change Passcodes</h4>
+                    <p>Update Master and Decoy PINs at any time.</p>
+                    <input type="password" id="updateMasterPin" class="numeric-pin-input" style="width:100%;" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="New Master PIN">
+                    <input type="password" id="updateDecoyPin" class="numeric-pin-input" style="width:100%;" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="New Decoy PIN">
+                    <button class="m-btn m-btn-confirm" style="width:100%;" onclick="updatePins()">Update PINs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Audio synthesis for tactile vintage key click
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClick() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    // CALCULATOR STATE
+    let currentInput = "0";
+    let historyInput = "";
+    let operator = null;
+    let prevValue = null;
+    let freshInput = true;
+
+    const calcValElem = document.getElementById("calcValue");
+    const calcHistElem = document.getElementById("calcHistory");
+
+    function updateDisplay() {
+        calcValElem.innerText = currentInput;
+        calcHistElem.innerText = historyInput;
+    }
+
+    function pressNum(n) {
+        playClick();
+        if (freshInput || currentInput === "0") {
+            currentInput = n === "00" ? "0" : n;
+            freshInput = false;
+        } else {
+            if (currentInput.length < 12) currentInput += n;
+        }
+        updateDisplay();
+    }
+
+    function pressDot() {
+        playClick();
+        if (freshInput) {
+            currentInput = "0.";
+            freshInput = false;
+        } else if (!currentInput.includes(".")) {
+            currentInput += ".";
+        }
+        updateDisplay();
+    }
+
+    function clearCalc() {
+        playClick();
+        currentInput = "0";
+        historyInput = "";
+        operator = null;
+        prevValue = null;
+        freshInput = true;
+        updateDisplay();
+    }
+
+    function deleteLast() {
+        playClick();
+        if (currentInput.length > 1) {
+            currentInput = currentInput.slice(0, -1);
+        } else {
+            currentInput = "0";
+            freshInput = true;
+        }
+        updateDisplay();
+    }
+
+    function pressOp(op) {
+        playClick();
+        prevValue = parseFloat(currentInput);
+        operator = op;
+        historyInput = `${prevValue} ${op}`;
+        freshInput = true;
+        updateDisplay();
+    }
+
+    function calcEquals() {
+        playClick();
+        if (operator === null || prevValue === null) return;
+        const current = parseFloat(currentInput);
+        let res = 0;
+        switch (operator) {
+            case '+': res = prevValue + current; break;
+            case '-': res = prevValue - current; break;
+            case '*': res = prevValue * current; break;
+            case '/': res = current === 0 ? "Error" : prevValue / current; break;
+            case '%': res = (prevValue * current) / 100; break;
+        }
+        historyInput = `${prevValue} ${operator} ${current} =`;
+        currentInput = typeof res === 'number' ? (Math.round(res * 100000) / 100000).toString() : res;
+        operator = null;
+        prevValue = null;
+        freshInput = true;
+        updateDisplay();
+    }
+
+    // LCD SCREEN HOLD DETECTOR (3 Seconds)
+    const lcd = document.getElementById("lcdDisplay");
+    const holdBar = document.getElementById("holdBar");
+    let holdTimer = null;
+    let holdStartTime = 0;
+    const REQUIRED_HOLD = 3000;
+
+    function startHold(e) {
+        e.preventDefault();
+        holdStartTime = Date.now();
+        holdBar.style.transition = 'width 3s linear';
+        holdBar.style.width = '100%';
+
+        holdTimer = setTimeout(() => {
+            triggerSecretModal();
+            resetHold();
+        }, REQUIRED_HOLD);
+    }
+
+    function cancelHold() {
+        if (holdTimer) clearTimeout(holdTimer);
+        resetHold();
+    }
+
+    function resetHold() {
+        holdBar.style.transition = 'none';
+        holdBar.style.width = '0%';
+    }
+
+    lcd.addEventListener('pointerdown', startHold);
+    lcd.addEventListener('pointerup', cancelHold);
+    lcd.addEventListener('pointerleave', cancelHold);
+    lcd.addEventListener('pointercancel', cancelHold);
+
+    // VAULT LOGIC & PASSCODES
+    function getStoredMasterPin() { return localStorage.getItem('asroxa_vault_master') || "6079"; }
+    function getStoredDecoyPin() { return localStorage.getItem('asroxa_vault_decoy') || "2665"; }
+    function isSetupDone() { return localStorage.getItem('asroxa_vault_initialized') === "true"; }
+
+    function triggerSecretModal() {
+        if (!isSetupDone()) {
+            document.getElementById("setupModal").style.display = "flex";
+        } else {
+            const pinModal = document.getElementById("pinModal");
+            const pinInput = document.getElementById("vaultPinInput");
+            pinInput.value = "";
+            pinModal.style.display = "flex";
+            setTimeout(() => pinInput.focus(), 100);
+        }
+    }
+
+    function closePinModal() {
+        document.getElementById("pinModal").style.display = "none";
+    }
+
+    function saveInitialPins() {
+        const m = document.getElementById("newMasterPin").value;
+        const d = document.getElementById("newDecoyPin").value;
+        if (m.length === 4 && d.length === 4) {
+            localStorage.setItem('asroxa_vault_master', m);
+            localStorage.setItem('asroxa_vault_decoy', d);
+            localStorage.setItem('asroxa_vault_initialized', "true");
+            document.getElementById("setupModal").style.display = "none";
+            alert("Passcodes saved securely! Hold screen again to unlock.");
+        } else {
+            alert("Both PINs must be exactly 4 digits.");
+        }
+    }
+
+    let activeVaultType = "master"; // 'master' or 'decoy'
+
+    function verifyPin() {
+        const pin = document.getElementById("vaultPinInput").value;
+        const master = getStoredMasterPin();
+        const decoy = getStoredDecoyPin();
+
+        if (pin === master) {
+            activeVaultType = "master";
+            openVault("Master Vault");
+        } else if (pin === decoy) {
+            activeVaultType = "decoy";
+            openVault("General Archive");
+        } else {
+            alert("Invalid Code");
+            document.getElementById("vaultPinInput").value = "";
+        }
+    }
+
+    function openVault(title) {
+        closePinModal();
+        document.getElementById("calculator-screen").style.display = "none";
+        document.getElementById("vault-screen").style.display = "flex";
+        document.getElementById("vaultHeaderTitle").innerHTML = activeVaultType === 'master' ? '🔒 Private Master Vault' : '📁 Shared Archive';
+        renderVaultData();
+    }
+
+    function lockVault() {
+        document.getElementById("vault-screen").style.display = "none";
+        document.getElementById("calculator-screen").style.display = "flex";
+        clearCalc();
+    }
+
+    // VAULT DATA STORAGE
+    function getVaultStorageKey(type) {
+        return `vault_data_${activeVaultType}_${type}`;
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll(".v-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".content-tab").forEach(c => c.classList.remove("active"));
+        event.currentTarget.classList.add("active");
+        document.getElementById(`tab-${tab}`).classList.add("active");
+    }
+
+    function importMedia(input, type) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const list = JSON.parse(localStorage.getItem(getVaultStorageKey(type)) || "[]");
+            list.push(e.target.result);
+            localStorage.setItem(getVaultStorageKey(type), JSON.stringify(list));
+            renderVaultData();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function renderVaultData() {
+        // Photos
+        const photos = JSON.parse(localStorage.getItem(getVaultStorageKey('photo')) || "[]");
+        const pGrid = document.getElementById("photosGrid");
+        pGrid.innerHTML = photos.map(src => `<img src="${src}" class="media-item">`).join("");
+
+        // Videos
+        const videos = JSON.parse(localStorage.getItem(getVaultStorageKey('video')) || "[]");
+        const vGrid = document.getElementById("videosGrid");
+        vGrid.innerHTML = videos.map(src => `<video src="${src}" class="media-item" controls></video>`).join("");
+
+        // Contacts
+        const contacts = JSON.parse(localStorage.getItem(getVaultStorageKey('contacts')) || "[]");
+        const cList = document.getElementById("contactsList");
+        cList.innerHTML = contacts.map(c => `
+            <div class="contact-card">
+                <div class="contact-info">
+                    <h4>${c.name}</h4>
+                    <p>${c.phone}</p>
+                </div>
+                <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="wa-btn">WhatsApp</a>
+            </div>
+        `).join("");
+
+        // Notes
+        const notes = JSON.parse(localStorage.getItem(getVaultStorageKey('notes')) || "[]");
+        const nList = document.getElementById("notesList");
+        nList.innerHTML = notes.map(n => `
+            <div class="note-card">
+                <div class="contact-info">
+                    <h4>${n.title}</h4>
+                    <p>${n.desc}</p>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    function addNewContact() {
+        const name = prompt("Contact Name:");
+        if (!name) return;
+        const phone = prompt("Phone Number (with country code, e.g. 919876543210):");
+        if (!phone) return;
+        const contacts = JSON.parse(localStorage.getItem(getVaultStorageKey('contacts')) || "[]");
+        contacts.push({name, phone});
+        localStorage.setItem(getVaultStorageKey('contacts'), JSON.stringify(contacts));
+        renderVaultData();
+    }
+
+    function addNewNote() {
+        const title = prompt("Note Title:");
+        if (!title) return;
+        const desc = prompt("Note Content:");
+        if (!desc) return;
+        const notes = JSON.parse(localStorage.getItem(getVaultStorageKey('notes')) || "[]");
+        notes.push({title, desc});
+        localStorage.setItem(getVaultStorageKey('notes'), JSON.stringify(notes));
+        renderVaultData();
+    }
+
+    function updatePins() {
+        const m = document.getElementById("updateMasterPin").value;
+        const d = document.getElementById("updateDecoyPin").value;
+        if (m.length === 4 && d.length === 4) {
+            localStorage.setItem('asroxa_vault_master', m);
+            localStorage.setItem('asroxa_vault_decoy', d);
+            alert("Passcodes updated successfully!");
+            document.getElementById("updateMasterPin").value = "";
+            document.getElementById("updateDecoyPin").value = "";
+        } else {
+            alert("Both PINs must be 4 digits.");
+        }
+    }
+</script>
+</body>
+</html>
