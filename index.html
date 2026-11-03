@@ -17,6 +17,8 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
         }
 
@@ -169,6 +171,8 @@
             cursor: pointer;
             transition: background 0.15s ease, transform 0.08s ease;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
         }
 
         .btn:active {
@@ -279,11 +283,11 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent !important;
         }
         .m-btn-cancel { background: #f0f0f2; color: #444; }
         .m-btn-confirm { background: #2bb42c; color: #fff; }
 
-        /* CLEAN CONTACT MODAL FIELDS (SAMSUNG STYLE) */
         .setting-field-label {
             font-size: 12px;
             color: #555;
@@ -336,6 +340,7 @@
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent !important;
         }
 
         .vault-tabs {
@@ -358,6 +363,7 @@
             cursor: pointer;
             border-bottom: 2px solid transparent;
             white-space: nowrap;
+            -webkit-tap-highlight-color: transparent !important;
         }
         .v-tab.active { color: #2bb42c; border-bottom-color: #2bb42c; }
 
@@ -365,9 +371,10 @@
             flex: 1;
             overflow-y: auto;
             padding: 12px;
+            position: relative;
         }
 
-        .content-tab { display: none; }
+        .content-tab { display: none; height: 100%; }
         .content-tab.active { display: block; }
 
         .grid-media {
@@ -386,6 +393,7 @@
             background: #1f2328;
             border: 1px solid #2b323a;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent !important;
         }
 
         .media-item {
@@ -420,6 +428,7 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent !important;
         }
 
         .contact-card, .note-card, .setting-card, .intruder-card {
@@ -442,10 +451,14 @@
             text-decoration: none;
             color: white;
             display: inline-block;
+            border: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent !important;
         }
         .btn-call { background: #2196f3; }
         .btn-wa { background: #25d366; }
-        .btn-del { background: #e53935; border: none; cursor: pointer; }
+        .btn-del { background: #e53935; }
+        .btn-share { background: #7c4dff; }
 
         /* SLIM SETTINGS UI */
         .setting-card h4 { font-size: 14px; color: #2bb42c; margin-bottom: 4px; font-weight: 600; }
@@ -465,7 +478,7 @@
         }
         .slim-input-dark:focus { border-color: #2bb42c; }
 
-        /* INCOGNITO PRIVATE BROWSER */
+        /* IN-APP PRIVATE BROWSER */
         .browser-box {
             display: flex;
             flex-direction: column;
@@ -484,7 +497,7 @@
         }
         .browser-input {
             flex: 1;
-            height: 34px;
+            height: 36px;
             background: #20252b;
             border: 1px solid #38424d;
             border-radius: 6px;
@@ -497,11 +510,12 @@
             background: #2bb42c;
             color: white;
             border: none;
-            padding: 0 12px;
+            padding: 0 14px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent !important;
         }
         .browser-quick-links {
             display: flex;
@@ -510,12 +524,14 @@
             background: #171b1f;
             border-bottom: 1px solid #262c33;
             overflow-x: auto;
+            scrollbar-width: none;
         }
+        .browser-quick-links::-webkit-scrollbar { display: none; }
         .quick-tag {
             font-size: 11px;
             color: #889098;
             background: #22272e;
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             cursor: pointer;
             white-space: nowrap;
@@ -524,7 +540,7 @@
             flex: 1;
             background: #fff;
             position: relative;
-            min-height: 380px;
+            overflow: hidden;
         }
         .browser-frame {
             width: 100%;
@@ -532,46 +548,113 @@
             border: none;
         }
 
-        /* SPY CAMERA VIEW */
-        .camera-container {
+        /* FULLSCREEN SPY CAMERA & VIDEO RECORDER */
+        .camera-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 440px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            background: #181c20;
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid #282e36;
+            justify-content: space-between;
         }
-        .camera-video {
+        .camera-video-full {
+            position: absolute;
+            inset: 0;
             width: 100%;
-            max-height: 320px;
-            border-radius: 8px;
-            background: #000;
+            height: 100%;
             object-fit: cover;
         }
-        .camera-controls {
+        .camera-header-hud {
+            position: relative;
+            z-index: 10;
             display: flex;
-            gap: 16px;
-            margin-top: 14px;
+            justify-content: space-between;
             align-items: center;
+            padding: 14px 16px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
         }
-        .shutter-btn {
-            width: 60px;
-            height: 60px;
+        .rec-indicator {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: rgba(229,57,53,0.85);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .rec-dot {
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.3; } }
+
+        .camera-footer-hud {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 10px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+        }
+        .shutter-photo-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: transform 0.08s ease;
+        }
+        .shutter-photo-btn:active { transform: scale(0.92); }
+
+        .shutter-video-btn {
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             border: 4px solid #fff;
             background: #e53935;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(229,57,53,0.5);
+            box-shadow: 0 0 10px rgba(229,57,53,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.08s ease;
         }
-        .cam-switch-btn {
-            background: #2b323a;
+        .shutter-video-btn:active { transform: scale(0.92); }
+        .shutter-video-btn.recording {
+            border-radius: 12px;
+            transform: scale(0.85);
+            background: #fff;
+        }
+        .shutter-video-btn.recording::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: #e53935;
+            border-radius: 4px;
+        }
+
+        .cam-tool-btn {
+            background: rgba(255,255,255,0.2);
             color: #fff;
             border: none;
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 20px;
             font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
+            backdrop-filter: blur(4px);
         }
 
         /* FULLSCREEN MEDIA SLIDER VIEWER */
@@ -647,20 +730,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 18px;
+            padding: 12px 16px;
             background: rgba(18,20,22,0.9);
             border-top: 1px solid #2a2e33;
         }
-        .viewer-delete-btn {
-            background: #e53935;
-            color: #fff;
-            border: none;
+        .viewer-act-btn {
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: bold;
+            border: none;
+            color: #fff;
             cursor: pointer;
         }
+        .btn-viewer-share { background: #2196f3; }
+        .btn-viewer-del { background: #e53935; }
 
         /* RECYCLE BIN */
         .trash-item-row {
@@ -836,7 +920,7 @@
         </div>
     </div>
 
-    <!-- SMART CONTACT DIALOG MODAL (CLEAN SAMSUNG STYLE) -->
+    <!-- SMART CONTACT DIALOG MODAL -->
     <div class="modal-overlay" id="contactModal">
         <div class="modal-card" style="text-align:left; max-width:340px;">
             <h3 style="text-align:center;">Add Private Contact</h3>
@@ -875,7 +959,7 @@
         </div>
 
         <div class="vault-content">
-            <!-- PHOTOS (INDEXEDDB UNLIMITED STORAGE & MULTI-SELECT) -->
+            <!-- PHOTOS (INDEXEDDB UNLIMITED & MULTI-SELECT) -->
             <div id="tab-photos" class="content-tab active">
                 <label class="add-action-btn">
                     📷 Move Photos to Vault (Multi-Select)
@@ -884,7 +968,7 @@
                 <div class="grid-media" id="photosGrid"></div>
             </div>
 
-            <!-- VIDEOS (INDEXEDDB UNLIMITED STORAGE & MULTI-SELECT) -->
+            <!-- VIDEOS (INDEXEDDB UNLIMITED & MULTI-SELECT) -->
             <div id="tab-videos" class="content-tab">
                 <label class="add-action-btn">
                     🎬 Move Videos to Vault (Multi-Select)
@@ -893,34 +977,47 @@
                 <div class="grid-media" id="videosGrid"></div>
             </div>
 
-            <!-- INCOGNITO PRIVATE BROWSER -->
+            <!-- IN-APP PRIVATE BROWSER -->
             <div id="tab-browser" class="content-tab" style="height:100%;">
                 <div class="browser-box">
                     <div class="browser-nav-bar">
-                        <input type="text" id="browserUrlInput" class="browser-input" placeholder="Search or enter URL (e.g. google.com)">
-                        <button class="browser-btn" onclick="browseToUrl()">Go</button>
+                        <input type="text" id="browserUrlInput" class="browser-input" placeholder="Search or enter web query...">
+                        <button class="browser-btn" onclick="browseToUrl()">Search</button>
                     </div>
                     <div class="browser-quick-links">
-                        <span class="quick-tag" onclick="quickNav('https://www.google.com')">Google</span>
-                        <span class="quick-tag" onclick="quickNav('https://duckduckgo.com')">DuckDuckGo</span>
-                        <span class="quick-tag" onclick="quickNav('https://www.wikipedia.org')">Wikipedia</span>
-                        <span class="quick-tag" onclick="quickNav('https://news.ycombinator.com')">News</span>
+                        <span class="quick-tag" onclick="quickNav('https://html.duckduckgo.com/html/?q=')">DuckDuckGo</span>
+                        <span class="quick-tag" onclick="quickNav('https://en.m.wikipedia.org')">Wikipedia</span>
+                        <span class="quick-tag" onclick="quickNav('https://www.bing.com')">Bing</span>
+                        <span class="quick-tag" onclick="quickNav('https://news.ycombinator.com')">HackerNews</span>
                     </div>
                     <div class="browser-frame-container">
-                        <iframe id="secretBrowserFrame" class="browser-frame" src="about:blank"></iframe>
+                        <iframe id="secretBrowserFrame" class="browser-frame" src="https://html.duckduckgo.com/html/?q="></iframe>
                     </div>
                 </div>
             </div>
 
-            <!-- SPY CAMERA -->
-            <div id="tab-camera" class="content-tab">
-                <div class="camera-container">
-                    <video id="spyCameraVideo" class="camera-video" autoplay playsinline muted></video>
+            <!-- FULLSCREEN SPY CAMERA & VIDEO RECORDER -->
+            <div id="tab-camera" class="content-tab" style="height:100%;">
+                <div class="camera-wrapper">
+                    <video id="spyCameraVideo" class="camera-video-full" autoplay playsinline muted></video>
                     <canvas id="cameraCanvas" style="display:none;"></canvas>
-                    <div class="camera-controls">
-                        <button class="cam-switch-btn" onclick="switchCameraFacing()">🔄 Switch Cam</button>
-                        <button class="shutter-btn" onclick="captureVaultPhoto()"></button>
-                        <span style="font-size:12px; color:#888;">Tap circle to capture</span>
+
+                    <!-- Top HUD -->
+                    <div class="camera-header-hud">
+                        <button class="cam-tool-btn" onclick="switchCameraFacing()">🔄 Switch</button>
+                        <div id="recIndicator" class="rec-indicator">
+                            <span class="rec-dot"></span>
+                            <span id="recTimerText">REC 00:00</span>
+                        </div>
+                        <button class="cam-tool-btn" onclick="switchFlashMode()">⚡ Auto</button>
+                    </div>
+
+                    <!-- Bottom Controls HUD -->
+                    <div class="camera-footer-hud">
+                        <span style="font-size:11px; color:#ddd; font-weight:600;">PHOTO</span>
+                        <button class="shutter-photo-btn" onclick="captureVaultPhotoSilent()"></button>
+                        <button id="videoRecBtn" class="shutter-video-btn" onclick="toggleSecretVideoRecording()"></button>
+                        <span style="font-size:11px; color:#ddd; font-weight:600;">VIDEO</span>
                     </div>
                 </div>
             </div>
@@ -941,7 +1038,7 @@
             <div id="tab-intruder" class="content-tab">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <span style="font-size:12px; color:#889098;">Photos captured after 3 wrong PINs</span>
-                    <button class="btn-del" style="padding:4px 8px; border-radius:4px; font-size:11px;" onclick="clearIntruderLogs()">Clear Logs</button>
+                    <button class="btn-del c-act-btn" onclick="clearIntruderLogs()">Clear Logs</button>
                 </div>
                 <div id="intruderList"></div>
             </div>
@@ -950,7 +1047,7 @@
             <div id="tab-trash" class="content-tab">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <span style="font-size:12px; color:#889098;">Deleted items kept for 15 days</span>
-                    <button class="btn-del" style="padding:4px 8px; border-radius:4px; font-size:11px;" onclick="emptyTrash()">Empty Trash</button>
+                    <button class="btn-del c-act-btn" onclick="emptyTrash()">Empty Trash</button>
                 </div>
                 <div id="trashList"></div>
             </div>
@@ -990,13 +1087,13 @@
 
                 <div class="setting-card">
                     <h4>🔄 Panic Mode (Flip to Lock)</h4>
-                    <p>Turning the phone face down will immediately lock the vault and return to calculator.</p>
+                    <p>Turning phone face down locks vault immediately and returns to calculator.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FULLSCREEN MEDIA SLIDER VIEWER -->
+    <!-- FULLSCREEN MEDIA SLIDER VIEWER WITH DIRECT SHARE -->
     <div id="mediaViewerModal">
         <div class="viewer-top-bar">
             <span id="viewerTitle">Media 1 of 1</span>
@@ -1008,15 +1105,15 @@
             <button class="slider-nav-btn slider-next" onclick="slideNext(event)">❯</button>
         </div>
         <div class="viewer-bottom-bar">
-            <span style="font-size:12px; color:#888;">Swipe ◄ / ► to browse</span>
-            <button class="viewer-delete-btn" onclick="moveActiveMediaToTrash()">🗑️ Move to Trash</button>
+            <button class="viewer-act-btn btn-viewer-share" onclick="shareActiveMediaDirectly()">📤 Share File</button>
+            <span style="font-size:11px; color:#888;">Swipe ◄ / ►</span>
+            <button class="viewer-act-btn btn-viewer-del" onclick="moveActiveMediaToTrash()">🗑️ Move to Trash</button>
         </div>
     </div>
 
 </div>
 
 <script>
-    // Audio synthesis for tactile touch click
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playClick() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1033,7 +1130,6 @@
         osc.stop(audioCtx.currentTime + 0.03);
     }
 
-    // SAMSUNG CONTINUOUS FORMULA ENGINE (Supports 12 + 12 + 12 + 12 + 12 + 13 + 3014 + 414 ...)
     let formula = "";
     let isEvaluated = false;
     let calculationHistory = JSON.parse(localStorage.getItem('calc_history_list') || "[]");
@@ -1188,7 +1284,6 @@
         return rounded.toString();
     }
 
-    // CALCULATION HISTORY DRAWER
     function openHistoryDrawer() {
         playClick();
         const list = document.getElementById("historyList");
@@ -1215,7 +1310,6 @@
         openHistoryDrawer();
     }
 
-    // 3-SECOND SECRET HOLD TRIGGER (Display or '+/-' button)
     const displayArea = document.getElementById("calcDisplayArea");
     const plusMinusBtn = document.getElementById("plusMinusBtn");
     const holdBar = document.getElementById("holdBar");
@@ -1253,7 +1347,6 @@
     plusMinusBtn.addEventListener('pointerleave', cancelSecretHold);
     plusMinusBtn.addEventListener('pointercancel', cancelSecretHold);
 
-    // INDEXEDDB DATABASE FOR UNLIMITED STORAGE (BLOB MEDIA)
     let dbInstance = null;
     function openVaultDB() {
         return new Promise((resolve, reject) => {
@@ -1277,7 +1370,6 @@
     }
     openVaultDB();
 
-    // VAULT PASSCODES & DATA
     function getStoredMasterPin() { return localStorage.getItem('asroxa_vault_master') || "6079"; }
     function getStoredDecoyPin() { return localStorage.getItem('asroxa_vault_decoy') || "2665"; }
     function isSetupDone() { return localStorage.getItem('asroxa_vault_initialized') === "true"; }
@@ -1341,7 +1433,6 @@
         }
     }
 
-    // INTRUDER SELFIE CAPTURE AFTER 3 WRONG PINS
     async function captureIntruderSilentSelfie() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
@@ -1406,7 +1497,7 @@
     }
 
     function lockVault() {
-        if (isPickingFile) return;
+        if (isPickingFile || isRecordingVideo) return;
         isVaultOpen = false;
         closeMediaViewer();
         closeSettingsAuth();
@@ -1418,7 +1509,6 @@
         clearCalculator();
     }
 
-    // SETTINGS RE-AUTHENTICATION
     function requestSettingsTab() {
         if (activeVaultType !== "master") return;
         const input = document.getElementById("settingsAuthInput");
@@ -1442,9 +1532,8 @@
         }
     }
 
-    // PANIC FLIP-TO-LOCK
     window.addEventListener('deviceorientation', function(e) {
-        if (!isVaultOpen || isPickingFile) return;
+        if (!isVaultOpen || isPickingFile || isRecordingVideo) return;
         if (e.beta !== null) {
             const absBeta = Math.abs(e.beta);
             const absGamma = Math.abs(e.gamma || 0);
@@ -1455,19 +1544,18 @@
     });
 
     window.addEventListener('devicemotion', function(e) {
-        if (!isVaultOpen || isPickingFile) return;
+        if (!isVaultOpen || isPickingFile || isRecordingVideo) return;
         if (e.accelerationIncludingGravity && e.accelerationIncludingGravity.z < -7) {
             lockVault();
         }
     });
 
     document.addEventListener("visibilitychange", function() {
-        if (document.hidden && isVaultOpen && !isPickingFile) {
+        if (document.hidden && isVaultOpen && !isPickingFile && !isRecordingVideo) {
             lockVault();
         }
     });
 
-    // STORAGE & TABS
     function getVaultStorageKey(type) {
         return `vault_data_${activeVaultType}_${type}`;
     }
@@ -1483,13 +1571,12 @@
         if (tab === 'camera') {
             startSpyCamera();
         } else {
-            stopSpyCamera();
+            if (!isRecordingVideo) stopSpyCamera();
         }
 
         renderVaultData();
     }
 
-    // MULTIPLE MEDIA IMPORT (INDEXEDDB UNLIMITED)
     async function importMultipleMediaIndexedDB(input, type) {
         isPickingFile = false;
         if (!input.files || input.files.length === 0) return;
@@ -1524,7 +1611,6 @@
         inp.addEventListener('click', () => { isPickingFile = true; });
     });
 
-    // RENDER ALL DATA
     async function renderVaultData() {
         const db = await openVaultDB();
         const tx = db.transaction("media", "readonly");
@@ -1534,7 +1620,6 @@
             const allItems = req.result || [];
             const vaultItems = allItems.filter(item => item.vaultType === activeVaultType);
 
-            // Photos
             const photos = vaultItems.filter(item => item.mediaType === 'photo');
             const pGrid = document.getElementById("photosGrid");
             pGrid.innerHTML = photos.map(item => `
@@ -1543,7 +1628,6 @@
                 </div>
             `).join("");
 
-            // Videos
             const videos = vaultItems.filter(item => item.mediaType === 'video');
             const vGrid = document.getElementById("videosGrid");
             vGrid.innerHTML = videos.map(item => `
@@ -1554,7 +1638,6 @@
             `).join("");
         };
 
-        // Contacts
         const contacts = JSON.parse(localStorage.getItem(getVaultStorageKey('contacts')) || "[]");
         const cList = document.getElementById("contactsList");
         cList.innerHTML = contacts.map((c, index) => `
@@ -1573,7 +1656,6 @@
             </div>
         `).join("");
 
-        // Notes
         const notes = JSON.parse(localStorage.getItem(getVaultStorageKey('notes')) || "[]");
         const nList = document.getElementById("notesList");
         nList.innerHTML = notes.map((n, index) => `
@@ -1586,7 +1668,6 @@
             </div>
         `).join("");
 
-        // Trash
         if (activeVaultType === "master") {
             const trash = JSON.parse(localStorage.getItem('vault_trash_items') || "[]");
             const tList = document.getElementById("trashList");
@@ -1608,7 +1689,6 @@
                 `).join("");
             }
 
-            // Intruder Logs
             const iTx = db.transaction("intruders", "readonly");
             const iReq = iTx.objectStore("intruders").getAll();
             iReq.onsuccess = function() {
@@ -1631,7 +1711,6 @@
         }
     }
 
-    // FULLSCREEN MEDIA SLIDER
     let currentViewerItems = [];
     let currentViewerIdx = 0;
 
@@ -1681,7 +1760,38 @@
         }
     }
 
-    // Touch Swipe Gestures
+    async function shareActiveMediaDirectly() {
+        const item = currentViewerItems[currentViewerIdx];
+        if (!item) return;
+
+        try {
+            const response = await fetch(item.data);
+            const blob = await response.blob();
+            const ext = item.mediaType === 'photo' ? 'jpg' : 'mp4';
+            const file = new File([blob], `Vault_${Date.now()}.${ext}`, { type: blob.type });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'Private Share',
+                    text: 'Shared from Secure Vault'
+                });
+            } else if (navigator.share) {
+                await navigator.share({
+                    title: 'Private Share',
+                    text: 'Shared file from Secure Vault'
+                });
+            } else {
+                const a = document.createElement("a");
+                a.href = item.data;
+                a.download = `Vault_Media_${Date.now()}.${ext}`;
+                a.click();
+            }
+        } catch (err) {
+            console.log("Direct share error:", err);
+        }
+    }
+
     let touchStartX = 0;
     let touchEndX = 0;
     const sliderWrapper = document.getElementById("viewerSliderWrapper");
@@ -1703,7 +1813,6 @@
         document.getElementById("mediaViewerModal").style.display = "none";
     }
 
-    // MOVE TO TRASH
     async function moveActiveMediaToTrash() {
         const item = currentViewerItems[currentViewerIdx];
         if (!item) return;
@@ -1770,14 +1879,16 @@
         renderVaultData();
     }
 
-    // INCOGNITO PRIVATE BROWSER
     function browseToUrl() {
         let input = document.getElementById("browserUrlInput").value.trim();
         if (!input) return;
-        if (!input.startsWith("http://") && !input.startsWith("https://")) {
-            input = "https://www.google.com/search?q=" + encodeURIComponent(input);
+        let targetUrl = "";
+        if (input.startsWith("http://") || input.startsWith("https://")) {
+            targetUrl = input;
+        } else {
+            targetUrl = "https://html.duckduckgo.com/html/?q=" + encodeURIComponent(input);
         }
-        document.getElementById("secretBrowserFrame").src = input;
+        document.getElementById("secretBrowserFrame").src = targetUrl;
     }
 
     function quickNav(url) {
@@ -1785,44 +1896,62 @@
         document.getElementById("secretBrowserFrame").src = url;
     }
 
-    // SPY CAMERA LOGIC
     let cameraStream = null;
     let cameraFacing = "environment";
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecordingVideo = false;
+    let recTimerInterval = null;
+    let recSeconds = 0;
 
     async function startSpyCamera() {
         stopSpyCamera();
         try {
             cameraStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraFacing }
+                video: { facingMode: cameraFacing, width: { ideal: 1280 }, height: { ideal: 720 } },
+                audio: true
             });
             document.getElementById("spyCameraVideo").srcObject = cameraStream;
         } catch (err) {
-            console.log("Camera access error:", err);
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: cameraFacing }
+                });
+                document.getElementById("spyCameraVideo").srcObject = cameraStream;
+            } catch (e) {
+                console.log("Camera access error:", e);
+            }
         }
     }
 
     function stopSpyCamera() {
-        if (cameraStream) {
+        if (cameraStream && !isRecordingVideo) {
             cameraStream.getTracks().forEach(t => t.stop());
             cameraStream = null;
         }
     }
 
     function switchCameraFacing() {
+        if (isRecordingVideo) return;
         cameraFacing = cameraFacing === "environment" ? "user" : "environment";
         startSpyCamera();
     }
 
-    async function captureVaultPhoto() {
+    function switchFlashMode() {}
+
+    async function captureVaultPhotoSilent() {
         const vid = document.getElementById("spyCameraVideo");
         const canvas = document.getElementById("cameraCanvas");
         if (!vid || !cameraStream) return;
 
-        canvas.width = vid.videoWidth || 640;
-        canvas.height = vid.videoHeight || 480;
+        canvas.width = vid.videoWidth || 1280;
+        canvas.height = vid.videoHeight || 720;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-        const photoData = canvas.toDataURL("image/jpeg", 0.85);
+        const photoData = canvas.toDataURL("image/jpeg", 0.9);
+
+        vid.style.opacity = "0.3";
+        setTimeout(() => { vid.style.opacity = "1"; }, 80);
 
         const db = await openVaultDB();
         const tx = db.transaction("media", "readwrite");
@@ -1834,11 +1963,72 @@
             date: new Date().toLocaleDateString('en-US')
         });
 
-        alert("Secret photo captured and saved directly into Vault!");
         renderVaultData();
     }
 
-    // SMART CONTACT MODAL
+    function toggleSecretVideoRecording() {
+        if (!isRecordingVideo) {
+            startVideoRecording();
+        } else {
+            stopVideoRecording();
+        }
+    }
+
+    function startVideoRecording() {
+        if (!cameraStream) return;
+        recordedChunks = [];
+        try {
+            mediaRecorder = new MediaRecorder(cameraStream);
+            mediaRecorder.ondataavailable = e => {
+                if (e.data.size > 0) recordedChunks.push(e.data);
+            };
+            mediaRecorder.onstop = async () => {
+                const blob = new Blob(recordedChunks, { type: "video/mp4" });
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const db = await openVaultDB();
+                    const tx = db.transaction("media", "readwrite");
+                    tx.objectStore("media").add({
+                        vaultType: activeVaultType,
+                        mediaType: "video",
+                        data: e.target.result,
+                        name: "SpyVid_" + Date.now() + ".mp4",
+                        date: new Date().toLocaleDateString('en-US')
+                    });
+                    renderVaultData();
+                };
+                reader.readAsDataURL(blob);
+            };
+
+            mediaRecorder.start();
+            isRecordingVideo = true;
+
+            document.getElementById("videoRecBtn").classList.add("recording");
+            document.getElementById("recIndicator").style.display = "flex";
+            recSeconds = 0;
+            recTimerInterval = setInterval(() => {
+                recSeconds++;
+                const mins = String(Math.floor(recSeconds / 60)).padStart(2, '0');
+                const secs = String(recSeconds % 60).padStart(2, '0');
+                document.getElementById("recTimerText").innerText = `REC ${mins}:${secs}`;
+            }, 1000);
+
+        } catch (err) {
+            console.log("MediaRecorder start error:", err);
+        }
+    }
+
+    function stopVideoRecording() {
+        if (mediaRecorder && isRecordingVideo) {
+            mediaRecorder.stop();
+            isRecordingVideo = false;
+            clearInterval(recTimerInterval);
+
+            document.getElementById("videoRecBtn").classList.remove("recording");
+            document.getElementById("recIndicator").style.display = "none";
+        }
+    }
+
     function openContactModal() {
         document.getElementById("contactNameInput").value = "";
         document.getElementById("contactPhoneInput").value = "";
@@ -1878,7 +2068,6 @@
         renderVaultData();
     }
 
-    // SECRET NOTES
     function addNewNote() {
         const title = prompt("Note Title:");
         if (!title) return;
@@ -1898,7 +2087,6 @@
         renderVaultData();
     }
 
-    // PASSCODE UPDATE
     function updatePins() {
         const m = document.getElementById("updateMasterPin").value.replace(/[^0-9]/g, '');
         const d = document.getElementById("updateDecoyPin").value.replace(/[^0-9]/g, '');
@@ -1913,7 +2101,6 @@
         }
     }
 
-    // GOOGLE CLOUD ACCOUNT AUTHENTICATION & SYNC
     function openGoogleAuthModal() {
         document.getElementById("googleEmailInput").value = localStorage.getItem('asroxa_google_email') || "";
         document.getElementById("googleAuthModal").style.display = "flex";
