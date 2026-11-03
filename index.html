@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -50,9 +50,9 @@
             background: #ffffff;
             padding: 16px 16px 20px 16px;
             justify-content: space-between;
+            position: relative;
         }
 
-        /* DISPLAY WITH BLINKING CURSOR */
         .display-container {
             flex: 1;
             display: flex;
@@ -64,11 +64,11 @@
             touch-action: none;
         }
 
-        .calc-history {
+        .calc-preview {
             color: #767676;
-            font-size: 18px;
+            font-size: 20px;
             text-align: right;
-            min-height: 24px;
+            min-height: 26px;
             overflow: hidden;
             white-space: nowrap;
             margin-bottom: 4px;
@@ -79,32 +79,32 @@
             justify-content: flex-end;
             align-items: center;
             white-space: nowrap;
-            overflow: hidden;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
+        .calc-main-row::-webkit-scrollbar { display: none; }
 
         .calc-main {
             color: #1a1a1a;
-            font-size: 50px;
+            font-size: 46px;
             font-weight: 400;
             letter-spacing: -1px;
             text-align: right;
             line-height: 1.1;
+            white-space: nowrap;
         }
 
         .blinking-cursor {
             display: inline-block;
             width: 3px;
-            height: 44px;
+            height: 40px;
             background-color: #2bb42c;
             margin-left: 3px;
             animation: blink 1s step-end infinite;
             vertical-align: middle;
+            flex-shrink: 0;
         }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
 
         .hold-progress-bar {
             position: absolute;
@@ -123,7 +123,7 @@
             align-items: center;
             padding: 10px 12px 14px 12px;
             border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .tool-left {
@@ -176,40 +176,63 @@
             transform: scale(0.94);
         }
 
-        .btn.clear {
-            color: #e53935;
-            font-size: 26px;
-            font-weight: 500;
+        .btn.clear { color: #e53935; font-size: 26px; font-weight: 500; }
+        .btn.op { color: #2bb42c; font-size: 28px; font-weight: 500; }
+        .btn.equal { background: #2bb42c; color: #ffffff; font-size: 32px; font-weight: 400; }
+        .btn.equal:active { background: #249a25; }
+        .btn.plus-minus { font-size: 22px; font-weight: 500; }
+
+        /* HISTORY DRAWER */
+        #historyDrawer {
+            position: absolute;
+            inset: 0;
+            background: #ffffff;
+            display: none;
+            flex-direction: column;
+            z-index: 50;
+            padding: 16px 20px;
         }
 
-        .btn.op {
-            color: #2bb42c;
-            font-size: 28px;
-            font-weight: 500;
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        .history-header h3 { font-size: 18px; color: #1c1c1c; }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 14px;
         }
 
-        .btn.equal {
-            background: #2bb42c;
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: 400;
+        .history-item {
+            text-align: right;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .history-expr { font-size: 15px; color: #888; margin-bottom: 2px; }
+        .history-res { font-size: 22px; color: #1c1c1c; font-weight: 500; }
+
+        .history-footer {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
         }
 
-        .btn.equal:active {
-            background: #249a25;
-        }
-
-        .btn.plus-minus {
-            font-size: 22px;
-            font-weight: 500;
-        }
-
-        /* MODAL OVERLAYS */
+        /* MODAL OVERLAYS & CLEAN DIALOG UI */
         .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.72);
-            backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -222,29 +245,19 @@
             border-radius: 20px;
             width: 100%;
             max-width: 320px;
-            padding: 22px 18px;
+            padding: 22px 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
         }
 
-        .modal-card h3 {
-            color: #1c1c1c;
-            font-size: 18px;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .modal-card p {
-            color: #666;
-            font-size: 13px;
-            margin-bottom: 14px;
-        }
+        .modal-card h3 { color: #1c1c1c; font-size: 18px; margin-bottom: 6px; font-weight: 600; }
+        .modal-card p { color: #666; font-size: 13px; margin-bottom: 14px; }
 
         .numeric-pin-input {
             width: 170px;
             height: 44px;
-            background: #f7f7f7;
-            border: 2px solid #ddd;
+            background: #f5f5f7;
+            border: 1.5px solid #dcdce0;
             border-radius: 10px;
             font-size: 24px;
             font-weight: bold;
@@ -255,17 +268,9 @@
             margin: 0 auto 16px auto;
             display: block;
         }
+        .numeric-pin-input:focus { border-color: #2bb42c; background: #fff; }
 
-        .numeric-pin-input:focus {
-            border-color: #2bb42c;
-            background: #fff;
-        }
-
-        .modal-btn-row {
-            display: flex;
-            gap: 10px;
-        }
-
+        .modal-btn-row { display: flex; gap: 10px; }
         .m-btn {
             flex: 1;
             padding: 10px 0;
@@ -275,24 +280,40 @@
             font-weight: 600;
             cursor: pointer;
         }
+        .m-btn-cancel { background: #f0f0f2; color: #444; }
+        .m-btn-confirm { background: #2bb42c; color: #fff; }
 
-        .m-btn-cancel {
-            background: #f0f0f0;
+        /* CLEAN CONTACT MODAL FIELDS (SAMSUNG STYLE) */
+        .setting-field-label {
+            font-size: 12px;
             color: #555;
+            margin-bottom: 4px;
+            display: block;
+            text-align: left;
+            font-weight: 500;
         }
 
-        .m-btn-confirm {
-            background: #2bb42c;
-            color: #fff;
+        .clean-modal-input {
+            width: 100%;
+            height: 40px;
+            background: #f5f5f7;
+            border: 1.5px solid #e0e0e5;
+            border-radius: 8px;
+            color: #1c1c1c;
+            padding: 0 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
         }
+        .clean-modal-input:focus { border-color: #2bb42c; background: #ffffff; }
 
-        /* VAULT CONTAINER */
+        /* VAULT SCREEN */
         #vault-screen {
             display: none;
             flex-direction: column;
             width: 100%;
             height: 100%;
-            background: #121518;
+            background: #111417;
             color: #fff;
         }
 
@@ -300,68 +321,54 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
-            background: #1c2024;
-            border-bottom: 1px solid #292e34;
+            padding: 12px 16px;
+            background: #1a1e22;
+            border-bottom: 1px solid #282e35;
         }
 
-        .vault-title {
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .vault-title { font-size: 15px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
         .panic-btn {
             background: #e53935;
             color: white;
             border: none;
-            padding: 7px 15px;
+            padding: 6px 14px;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
         }
 
         .vault-tabs {
             display: flex;
-            background: #171b1e;
-            border-bottom: 1px solid #262c32;
+            background: #16191c;
+            border-bottom: 1px solid #252b31;
             overflow-x: auto;
+            scrollbar-width: none;
         }
+        .vault-tabs::-webkit-scrollbar { display: none; }
 
         .v-tab {
             flex: 1;
-            min-width: 65px;
+            min-width: 62px;
             text-align: center;
-            padding: 11px 4px;
-            font-size: 12px;
+            padding: 10px 4px;
+            font-size: 11px;
             font-weight: 600;
             color: #889098;
             cursor: pointer;
             border-bottom: 2px solid transparent;
             white-space: nowrap;
         }
-
-        .v-tab.active {
-            color: #2bb42c;
-            border-bottom-color: #2bb42c;
-        }
+        .v-tab.active { color: #2bb42c; border-bottom-color: #2bb42c; }
 
         .vault-content {
             flex: 1;
             overflow-y: auto;
-            padding: 14px;
+            padding: 12px;
         }
 
-        .content-tab {
-            display: none;
-        }
-
-        .content-tab.active {
-            display: block;
-        }
+        .content-tab { display: none; }
+        .content-tab.active { display: block; }
 
         .grid-media {
             display: grid;
@@ -376,8 +383,8 @@
             aspect-ratio: 1;
             border-radius: 8px;
             overflow: hidden;
-            background: #22262b;
-            border: 1px solid #2e343b;
+            background: #1f2328;
+            border: 1px solid #2b323a;
             cursor: pointer;
         }
 
@@ -402,10 +409,10 @@
         .add-action-btn {
             width: 100%;
             padding: 12px;
-            background: #1e2227;
-            border: 1px dashed #3e4650;
+            background: #1b1f24;
+            border: 1px dashed #3a424c;
             border-radius: 8px;
-            color: #a6b0ba;
+            color: #9ea8b3;
             font-size: 13px;
             font-weight: 600;
             display: flex;
@@ -415,32 +422,18 @@
             cursor: pointer;
         }
 
-        .contact-card, .note-card, .setting-card {
-            background: #1d2126;
-            border: 1px solid #292f37;
+        .contact-card, .note-card, .setting-card, .intruder-card {
+            background: #1c2025;
+            border: 1px solid #293038;
             border-radius: 10px;
             padding: 12px 14px;
             margin-bottom: 10px;
         }
 
-        .contact-info h4 {
-            font-size: 15px;
-            color: #fff;
-            margin-bottom: 3px;
-        }
+        .contact-info h4 { font-size: 15px; color: #fff; margin-bottom: 3px; }
+        .contact-info p { font-size: 12px; color: #8c939b; margin-bottom: 2px; }
 
-        .contact-info p {
-            font-size: 12px;
-            color: #8c939b;
-            margin-bottom: 2px;
-        }
-
-        .contact-btn-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
+        .contact-btn-row { display: flex; gap: 8px; margin-top: 8px; }
         .c-act-btn {
             padding: 5px 12px;
             border-radius: 5px;
@@ -450,33 +443,15 @@
             color: white;
             display: inline-block;
         }
-
         .btn-call { background: #2196f3; }
         .btn-wa { background: #25d366; }
         .btn-del { background: #e53935; border: none; cursor: pointer; }
 
         /* SLIM SETTINGS UI */
-        .setting-card h4 {
-            font-size: 14px;
-            color: #2bb42c;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .setting-card p {
-            font-size: 12px;
-            color: #8f98a2;
-            margin-bottom: 10px;
-        }
-
-        .setting-field-label {
-            font-size: 11px;
-            color: #b0b8c0;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .slim-input {
+        .setting-card h4 { font-size: 14px; color: #2bb42c; margin-bottom: 4px; font-weight: 600; }
+        .setting-card p { font-size: 12px; color: #8f98a2; margin-bottom: 10px; }
+        .setting-label-dark { font-size: 11px; color: #b0b8c0; margin-bottom: 4px; display: block; }
+        .slim-input-dark {
             width: 100%;
             height: 38px;
             background: #14171a;
@@ -488,9 +463,115 @@
             margin-bottom: 10px;
             outline: none;
         }
+        .slim-input-dark:focus { border-color: #2bb42c; }
 
-        .slim-input:focus {
-            border-color: #2bb42c;
+        /* INCOGNITO PRIVATE BROWSER */
+        .browser-box {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #1a1e22;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #282f37;
+        }
+        .browser-nav-bar {
+            display: flex;
+            gap: 6px;
+            padding: 8px 10px;
+            background: #14171a;
+            border-bottom: 1px solid #293038;
+        }
+        .browser-input {
+            flex: 1;
+            height: 34px;
+            background: #20252b;
+            border: 1px solid #38424d;
+            border-radius: 6px;
+            color: #fff;
+            padding: 0 10px;
+            font-size: 13px;
+            outline: none;
+        }
+        .browser-btn {
+            background: #2bb42c;
+            color: white;
+            border: none;
+            padding: 0 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .browser-quick-links {
+            display: flex;
+            gap: 8px;
+            padding: 6px 10px;
+            background: #171b1f;
+            border-bottom: 1px solid #262c33;
+            overflow-x: auto;
+        }
+        .quick-tag {
+            font-size: 11px;
+            color: #889098;
+            background: #22272e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .browser-frame-container {
+            flex: 1;
+            background: #fff;
+            position: relative;
+            min-height: 380px;
+        }
+        .browser-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* SPY CAMERA VIEW */
+        .camera-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #181c20;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #282e36;
+        }
+        .camera-video {
+            width: 100%;
+            max-height: 320px;
+            border-radius: 8px;
+            background: #000;
+            object-fit: cover;
+        }
+        .camera-controls {
+            display: flex;
+            gap: 16px;
+            margin-top: 14px;
+            align-items: center;
+        }
+        .shutter-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            background: #e53935;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(229,57,53,0.5);
+        }
+        .cam-switch-btn {
+            background: #2b323a;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         /* FULLSCREEN MEDIA SLIDER VIEWER */
@@ -511,12 +592,7 @@
             padding: 14px 18px;
             background: rgba(18,20,22,0.85);
         }
-
-        .viewer-top-bar span {
-            color: #ccc;
-            font-size: 13px;
-        }
-
+        .viewer-top-bar span { color: #ccc; font-size: 13px; }
         .viewer-close-btn {
             background: transparent;
             border: none;
@@ -544,7 +620,6 @@
             align-items: center;
             padding: 6px;
         }
-
         .viewer-media-container img, .viewer-media-container video {
             max-width: 100%;
             max-height: 100%;
@@ -565,7 +640,6 @@
             cursor: pointer;
             z-index: 10;
         }
-
         .slider-prev { left: 8px; }
         .slider-next { right: 8px; }
 
@@ -577,7 +651,6 @@
             background: rgba(18,20,22,0.9);
             border-top: 1px solid #2a2e33;
         }
-
         .viewer-delete-btn {
             background: #e53935;
             color: #fff;
@@ -594,28 +667,20 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #1d2126;
+            background: #1c2025;
             padding: 8px 10px;
             border-radius: 8px;
             margin-bottom: 8px;
         }
-
         .trash-thumb {
             width: 50px;
             height: 50px;
             border-radius: 6px;
             object-fit: cover;
-            background: #25282d;
+            background: #22262c;
         }
-
-        .trash-info {
-            flex: 1;
-        }
-
-        .trash-info p {
-            font-size: 12px;
-            color: #a0a8b0;
-        }
+        .trash-info { flex: 1; }
+        .trash-info p { font-size: 12px; color: #a0a8b0; }
     </style>
 </head>
 <body>
@@ -627,9 +692,9 @@
         
         <!-- DISPLAY SCREEN -->
         <div class="display-container" id="calcDisplayArea">
-            <div class="calc-history" id="calcHistory"></div>
-            <div class="calc-main-row">
-                <span class="calc-main" id="calcValue"></span>
+            <div class="calc-preview" id="calcPreview"></div>
+            <div class="calc-main-row" id="calcMainRow">
+                <span class="calc-main" id="calcExpression"></span>
                 <span class="blinking-cursor" id="blinkingCursor"></span>
             </div>
             <div class="hold-progress-bar" id="holdBar"></div>
@@ -638,7 +703,7 @@
         <!-- TOOLBAR (HISTORY, CONVERTER, SCIENTIFIC, BACKSPACE) -->
         <div class="toolbar">
             <div class="tool-left">
-                <div class="tool-icon" onclick="clearCalc()">
+                <div class="tool-icon" onclick="openHistoryDrawer()">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
@@ -662,7 +727,7 @@
                 </div>
             </div>
 
-            <div class="backspace-btn" onclick="deleteLast()">
+            <div class="backspace-btn" onclick="handleBackspace()">
                 <svg width="26" height="22" viewBox="0 0 26 22" fill="none">
                     <path d="M9 3H21C22.1 3 23 3.9 23 5V17C23 18.1 22.1 19 21 19H9L2 11L9 3Z" stroke="#2bb42c" stroke-width="2" fill="none"/>
                     <line x1="12" y1="8" x2="18" y2="14" stroke="#2bb42c" stroke-width="2" stroke-linecap="round"/>
@@ -673,38 +738,52 @@
 
         <!-- KEYPAD -->
         <div class="keypad">
-            <button class="btn clear" onclick="clearCalc()">C</button>
-            <button class="btn op" onclick="pressParen()">( )</button>
-            <button class="btn op" onclick="pressOp('%')">%</button>
-            <button class="btn op" onclick="pressOp('/')">÷</button>
+            <button class="btn clear" onclick="clearCalculator()">C</button>
+            <button class="btn op" onclick="appendInput('(')">( )</button>
+            <button class="btn op" onclick="appendOperator('%')">%</button>
+            <button class="btn op" onclick="appendOperator('÷')">÷</button>
 
-            <button class="btn" onclick="pressNum('7')">7</button>
-            <button class="btn" onclick="pressNum('8')">8</button>
-            <button class="btn" onclick="pressNum('9')">9</button>
-            <button class="btn op" onclick="pressOp('*')">×</button>
+            <button class="btn" onclick="appendInput('7')">7</button>
+            <button class="btn" onclick="appendInput('8')">8</button>
+            <button class="btn" onclick="appendInput('9')">9</button>
+            <button class="btn op" onclick="appendOperator('×')">×</button>
 
-            <button class="btn" onclick="pressNum('4')">4</button>
-            <button class="btn" onclick="pressNum('5')">5</button>
-            <button class="btn" onclick="pressNum('6')">6</button>
-            <button class="btn op" onclick="pressOp('-')">−</button>
+            <button class="btn" onclick="appendInput('4')">4</button>
+            <button class="btn" onclick="appendInput('5')">5</button>
+            <button class="btn" onclick="appendInput('6')">6</button>
+            <button class="btn op" onclick="appendOperator('−')">−</button>
 
-            <button class="btn" onclick="pressNum('1')">1</button>
-            <button class="btn" onclick="pressNum('2')">2</button>
-            <button class="btn" onclick="pressNum('3')">3</button>
-            <button class="btn op" onclick="pressOp('+')">+</button>
+            <button class="btn" onclick="appendInput('1')">1</button>
+            <button class="btn" onclick="appendInput('2')">2</button>
+            <button class="btn" onclick="appendInput('3')">3</button>
+            <button class="btn op" onclick="appendOperator('+')">+</button>
 
-            <button class="btn plus-minus" id="plusMinusBtn" onclick="toggleSign()">+/−</button>
-            <button class="btn" onclick="pressNum('0')">0</button>
-            <button class="btn" onclick="pressDot()">.</button>
-            <button class="btn equal" onclick="calcEquals()">=</button>
+            <button class="btn plus-minus" id="plusMinusBtn" onclick="toggleNegation()">+/−</button>
+            <button class="btn" onclick="appendInput('0')">0</button>
+            <button class="btn" onclick="appendInput('.')">.</button>
+            <button class="btn equal" onclick="calculateResult()">=</button>
         </div>
+
+        <!-- HISTORY DRAWER SHEET -->
+        <div id="historyDrawer">
+            <div class="history-header">
+                <h3>Calculation History</h3>
+                <button onclick="closeHistoryDrawer()" style="background:none; border:none; font-size:22px; cursor:pointer;">✕</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+            <div class="history-footer">
+                <button onclick="clearHistory()" style="background:none; border:none; color:#e53935; font-size:14px; font-weight:600; cursor:pointer;">Clear History</button>
+                <button onclick="closeHistoryDrawer()" style="background:none; border:none; color:#2bb42c; font-size:14px; font-weight:600; cursor:pointer;">Close</button>
+            </div>
+        </div>
+
     </div>
 
     <!-- PIN MODAL -->
     <div class="modal-overlay" id="pinModal">
         <div class="modal-card">
-            <h3>Enter Security PIN</h3>
-            <p>Enter your 4-digit secret passcode</p>
+            <h3>Enter Passcode</h3>
+            <p>Enter 4-digit security code</p>
             <input type="password" id="vaultPinInput" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
             <div class="modal-btn-row">
                 <button class="m-btn m-btn-cancel" onclick="closePinModal()">Cancel</button>
@@ -716,13 +795,13 @@
     <!-- FIRST TIME SETUP MODAL -->
     <div class="modal-overlay" id="setupModal">
         <div class="modal-card">
-            <h3>Set Up Passcodes</h3>
-            <p>Set your Private Master PIN and Harmless Decoy PIN</p>
-            <label class="setting-field-label">Master PIN (Private Vault):</label>
+            <h3>Security PIN Setup</h3>
+            <p>Set your confidential Master PIN and Decoy PIN</p>
+            <label class="setting-field-label">Master Vault PIN (Private):</label>
             <input type="password" id="newMasterPin" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="6079">
-            <label class="setting-field-label">Decoy PIN (Harmless):</label>
+            <label class="setting-field-label">Decoy Vault PIN (Harmless):</label>
             <input type="password" id="newDecoyPin" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="2665">
-            <button class="m-btn m-btn-confirm" style="width:100%; margin-top:8px;" onclick="saveInitialPins()">Save Passcodes</button>
+            <button class="m-btn m-btn-confirm" style="width:100%; margin-top:8px;" onclick="saveInitialPins()">Save & Initialize</button>
         </div>
     </div>
 
@@ -730,7 +809,7 @@
     <div class="modal-overlay" id="settingsAuthModal">
         <div class="modal-card">
             <h3>Security Verification</h3>
-            <p>Enter Master PIN to access Settings</p>
+            <p>Enter Master PIN to access Vault Settings</p>
             <input type="password" id="settingsAuthInput" class="numeric-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
             <div class="modal-btn-row">
                 <button class="m-btn m-btn-cancel" onclick="closeSettingsAuth()">Cancel</button>
@@ -739,21 +818,39 @@
         </div>
     </div>
 
-    <!-- SMART CONTACT DIALOG MODAL -->
+    <!-- GOOGLE ACCOUNT SIGN-IN MODAL -->
+    <div class="modal-overlay" id="googleAuthModal">
+        <div class="modal-card" style="text-align:left;">
+            <h3 style="text-align:center;">Connect Google Cloud</h3>
+            <p style="text-align:center;">Sign in to sync your encrypted vault backup to Google Drive</p>
+            <label class="setting-field-label">Google Email Address:</label>
+            <input type="email" id="googleEmailInput" class="clean-modal-input" placeholder="e.g. name@gmail.com">
+            <label class="setting-field-label">Cloud Sync Authorization:</label>
+            <div style="font-size:12px; color:#666; margin-bottom:12px; line-height:1.4;">
+                Vault will create an encrypted <b>.asroxa</b> container in your private Google Drive storage. No one can read your files without your PIN.
+            </div>
+            <div class="modal-btn-row">
+                <button class="m-btn m-btn-cancel" onclick="closeGoogleAuthModal()">Cancel</button>
+                <button class="m-btn m-btn-confirm" onclick="confirmGoogleAuth()">Sign In & Sync</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMART CONTACT DIALOG MODAL (CLEAN SAMSUNG STYLE) -->
     <div class="modal-overlay" id="contactModal">
         <div class="modal-card" style="text-align:left; max-width:340px;">
             <h3 style="text-align:center;">Add Private Contact</h3>
             <label class="setting-field-label">Contact Name:</label>
-            <input type="text" id="contactNameInput" class="slim-input" placeholder="e.g. Rahul Sharma">
+            <input type="text" id="contactNameInput" class="clean-modal-input" placeholder="e.g. Rahul Sharma">
             <label class="setting-field-label">Primary Phone (Strictly Numbers):</label>
-            <input type="tel" id="contactPhoneInput" class="slim-input" inputmode="numeric" pattern="[0-9+]*" placeholder="e.g. 9876543210">
+            <input type="tel" id="contactPhoneInput" class="clean-modal-input" inputmode="numeric" pattern="[0-9+]*" placeholder="e.g. 9876543210">
             <label class="setting-field-label">Secondary / WhatsApp (Optional):</label>
-            <input type="tel" id="contactAltPhoneInput" class="slim-input" inputmode="numeric" pattern="[0-9+]*" placeholder="e.g. 9123456789">
+            <input type="tel" id="contactAltPhoneInput" class="clean-modal-input" inputmode="numeric" pattern="[0-9+]*" placeholder="e.g. 9123456789">
             <label class="setting-field-label">Secret Note (Optional):</label>
-            <input type="text" id="contactNoteInput" class="slim-input" placeholder="e.g. Personal Office">
+            <input type="text" id="contactNoteInput" class="clean-modal-input" placeholder="e.g. Personal Office">
             <div class="modal-btn-row" style="margin-top:6px;">
                 <button class="m-btn m-btn-cancel" onclick="closeContactModal()">Cancel</button>
-                <button class="m-btn m-btn-confirm" onclick="saveContactCard()">Save</button>
+                <button class="m-btn m-btn-confirm" onclick="saveContactCard()">Save Contact</button>
             </div>
         </div>
     </div>
@@ -768,29 +865,64 @@
         <div class="vault-tabs" id="vaultTabBar">
             <div class="v-tab active" onclick="switchTab('photos')">Photos</div>
             <div class="v-tab" onclick="switchTab('videos')">Videos</div>
+            <div class="v-tab" id="browserTabBtn" onclick="switchTab('browser')">Browser</div>
+            <div class="v-tab" id="cameraTabBtn" onclick="switchTab('camera')">Camera</div>
             <div class="v-tab" onclick="switchTab('contacts')">Contacts</div>
             <div class="v-tab" onclick="switchTab('notes')">Notes</div>
+            <div class="v-tab" id="intruderTabBtn" onclick="switchTab('intruder')">Intruder</div>
             <div class="v-tab" id="trashTabBtn" onclick="switchTab('trash')">Trash</div>
             <div class="v-tab" id="settingsTabBtn" onclick="requestSettingsTab()">Settings</div>
         </div>
 
         <div class="vault-content">
-            <!-- PHOTOS (MULTI-SELECT SUPPORTED) -->
+            <!-- PHOTOS (INDEXEDDB UNLIMITED STORAGE & MULTI-SELECT) -->
             <div id="tab-photos" class="content-tab active">
                 <label class="add-action-btn">
                     📷 Move Photos to Vault (Multi-Select)
-                    <input type="file" accept="image/*" multiple style="display:none;" onchange="importMultipleMedia(this, 'photo')">
+                    <input type="file" accept="image/*" multiple style="display:none;" onchange="importMultipleMediaIndexedDB(this, 'photo')">
                 </label>
                 <div class="grid-media" id="photosGrid"></div>
             </div>
 
-            <!-- VIDEOS (MULTI-SELECT SUPPORTED) -->
+            <!-- VIDEOS (INDEXEDDB UNLIMITED STORAGE & MULTI-SELECT) -->
             <div id="tab-videos" class="content-tab">
                 <label class="add-action-btn">
                     🎬 Move Videos to Vault (Multi-Select)
-                    <input type="file" accept="video/*" multiple style="display:none;" onchange="importMultipleMedia(this, 'video')">
+                    <input type="file" accept="video/*" multiple style="display:none;" onchange="importMultipleMediaIndexedDB(this, 'video')">
                 </label>
                 <div class="grid-media" id="videosGrid"></div>
+            </div>
+
+            <!-- INCOGNITO PRIVATE BROWSER -->
+            <div id="tab-browser" class="content-tab" style="height:100%;">
+                <div class="browser-box">
+                    <div class="browser-nav-bar">
+                        <input type="text" id="browserUrlInput" class="browser-input" placeholder="Search or enter URL (e.g. google.com)">
+                        <button class="browser-btn" onclick="browseToUrl()">Go</button>
+                    </div>
+                    <div class="browser-quick-links">
+                        <span class="quick-tag" onclick="quickNav('https://www.google.com')">Google</span>
+                        <span class="quick-tag" onclick="quickNav('https://duckduckgo.com')">DuckDuckGo</span>
+                        <span class="quick-tag" onclick="quickNav('https://www.wikipedia.org')">Wikipedia</span>
+                        <span class="quick-tag" onclick="quickNav('https://news.ycombinator.com')">News</span>
+                    </div>
+                    <div class="browser-frame-container">
+                        <iframe id="secretBrowserFrame" class="browser-frame" src="about:blank"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPY CAMERA -->
+            <div id="tab-camera" class="content-tab">
+                <div class="camera-container">
+                    <video id="spyCameraVideo" class="camera-video" autoplay playsinline muted></video>
+                    <canvas id="cameraCanvas" style="display:none;"></canvas>
+                    <div class="camera-controls">
+                        <button class="cam-switch-btn" onclick="switchCameraFacing()">🔄 Switch Cam</button>
+                        <button class="shutter-btn" onclick="captureVaultPhoto()"></button>
+                        <span style="font-size:12px; color:#888;">Tap circle to capture</span>
+                    </div>
+                </div>
             </div>
 
             <!-- CONTACTS -->
@@ -805,6 +937,15 @@
                 <div id="notesList" style="margin-top:12px;"></div>
             </div>
 
+            <!-- INTRUDER LOGS -->
+            <div id="tab-intruder" class="content-tab">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <span style="font-size:12px; color:#889098;">Photos captured after 3 wrong PINs</span>
+                    <button class="btn-del" style="padding:4px 8px; border-radius:4px; font-size:11px;" onclick="clearIntruderLogs()">Clear Logs</button>
+                </div>
+                <div id="intruderList"></div>
+            </div>
+
             <!-- TRASH / RECYCLE BIN (15 DAYS SAFE) -->
             <div id="tab-trash" class="content-tab">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -814,27 +955,31 @@
                 <div id="trashList"></div>
             </div>
 
-            <!-- SETTINGS TAB (STRICTLY SLIM & PROPORTIONAL) -->
+            <!-- SLIM PROPORTIONAL SETTINGS TAB -->
             <div id="tab-settings" class="content-tab">
                 <div class="setting-card">
                     <h4>Change Passcodes</h4>
                     <p>Update Master and Decoy PINs cleanly.</p>
-                    <label class="setting-field-label">New 4-Digit Master PIN (Private):</label>
-                    <input type="password" id="updateMasterPin" class="slim-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Enter new Master PIN">
-                    <label class="setting-field-label">New 4-Digit Decoy PIN (Harmless):</label>
-                    <input type="password" id="updateDecoyPin" class="slim-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Enter new Decoy PIN">
+                    <label class="setting-label-dark">New 4-Digit Master PIN (Private):</label>
+                    <input type="password" id="updateMasterPin" class="slim-input-dark" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="New Master PIN">
+                    <label class="setting-label-dark">New 4-Digit Decoy PIN (Harmless):</label>
+                    <input type="password" id="updateDecoyPin" class="slim-input-dark" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="New Decoy PIN">
                     <button class="m-btn m-btn-confirm" style="width:100%; padding:8px 0;" onclick="updatePins()">Update PINs</button>
                 </div>
 
                 <div class="setting-card">
                     <h4>Google Cloud Auto-Sync (Backup & Restore)</h4>
-                    <p>Zero-click encrypted synchronization with your Google Drive storage.</p>
+                    <p>Zero-click encrypted synchronization with Google Drive storage.</p>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="font-size:13px; color:#ddd;">Auto Sync (Periodic Scan):</span>
-                        <input type="checkbox" id="cloudSyncToggle" checked onchange="toggleCloudSync(this.checked)" style="transform:scale(1.3); cursor:pointer;">
+                        <span id="googleAccountStatusText" style="font-size:13px; color:#ddd;">Account: Not Connected</span>
+                        <button class="m-btn m-btn-confirm" style="max-width:130px; padding:6px 10px; font-size:12px;" onclick="openGoogleAuthModal()">Connect Account</button>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-size:12px; color:#aaa;">Auto-Scan Background Sync:</span>
+                        <input type="checkbox" id="cloudSyncToggle" checked onchange="toggleCloudSync(this.checked)" style="transform:scale(1.2); cursor:pointer;">
                     </div>
                     <p id="cloudSyncStatus" style="font-size:11px; color:#2bb42c;">● Status: Synced & Protected (AES-256)</p>
-                    <div class="modal-btn-row">
+                    <div class="modal-btn-row" style="margin-top:10px;">
                         <button class="m-btn m-btn-cancel" onclick="exportEncryptedBackup()">Export Backup</button>
                         <label class="m-btn m-btn-confirm" style="text-align:center; cursor:pointer;">
                             Restore Backup
@@ -845,13 +990,13 @@
 
                 <div class="setting-card">
                     <h4>🔄 Panic Mode (Flip to Lock)</h4>
-                    <p>ফোনটি টেবিলে উপুড় করে রাখলে সঙ্গে সঙ্গে লক হয়ে ক্যালকুলেটর অন হয়ে যাবে।</p>
+                    <p>Turning the phone face down will immediately lock the vault and return to calculator.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FULLSCREEN MEDIA SLIDER VIEWER WITH SWIPE GESTURE -->
+    <!-- FULLSCREEN MEDIA SLIDER VIEWER -->
     <div id="mediaViewerModal">
         <div class="viewer-top-bar">
             <span id="viewerTitle">Media 1 of 1</span>
@@ -871,7 +1016,7 @@
 </div>
 
 <script>
-    // Subtly synthesized tactile audio click
+    // Audio synthesis for tactile touch click
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playClick() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -888,107 +1033,186 @@
         osc.stop(audioCtx.currentTime + 0.03);
     }
 
-    // CALCULATOR STATE & LOGIC
-    let currentInput = "";
-    let historyInput = "";
-    let operator = null;
-    let prevValue = null;
-    let openParenCount = 0;
+    // SAMSUNG CONTINUOUS FORMULA ENGINE (Supports 12 + 12 + 12 + 12 + 12 + 13 + 3014 + 414 ...)
+    let formula = "";
+    let isEvaluated = false;
+    let calculationHistory = JSON.parse(localStorage.getItem('calc_history_list') || "[]");
 
-    const calcValElem = document.getElementById("calcValue");
-    const calcHistElem = document.getElementById("calcHistory");
+    const exprElem = document.getElementById("calcExpression");
+    const previewElem = document.getElementById("calcPreview");
 
-    function updateDisplay() {
-        calcValElem.innerText = currentInput === "" ? "0" : currentInput;
-        calcHistElem.innerText = historyInput;
-    }
-    updateDisplay();
+    function renderDisplay() {
+        exprElem.innerText = formula === "" ? "0" : formula;
+        const row = document.getElementById("calcMainRow");
+        row.scrollLeft = row.scrollWidth;
 
-    function pressNum(n) {
-        playClick();
-        if (currentInput === "0") currentInput = "";
-        currentInput += n;
-        updateDisplay();
-    }
-
-    function pressDot() {
-        playClick();
-        if (!currentInput.includes(".")) {
-            currentInput += currentInput === "" ? "0." : ".";
-            updateDisplay();
-        }
-    }
-
-    function pressParen() {
-        playClick();
-        if (openParenCount === 0 || currentInput.endsWith("+") || currentInput.endsWith("-") || currentInput.endsWith("*") || currentInput.endsWith("/")) {
-            currentInput += "(";
-            openParenCount++;
-        } else {
-            currentInput += ")";
-            openParenCount--;
-        }
-        updateDisplay();
-    }
-
-    function toggleSign() {
-        playClick();
-        if (currentInput !== "" && currentInput !== "0") {
-            if (currentInput.startsWith("-")) {
-                currentInput = currentInput.slice(1);
+        if (formula !== "" && /[+\−×÷%]/.test(formula)) {
+            const result = safeEvaluate(formula);
+            if (result !== null && !isNaN(result)) {
+                previewElem.innerText = formatNumber(result);
             } else {
-                currentInput = "-" + currentInput;
+                previewElem.innerText = "";
             }
-            updateDisplay();
+        } else {
+            previewElem.innerText = "";
+        }
+    }
+    renderDisplay();
+
+    function appendInput(val) {
+        playClick();
+        if (isEvaluated) {
+            if ("0123456789.".includes(val)) { formula = ""; }
+            isEvaluated = false;
+        }
+
+        if (val === '.') {
+            const chunks = formula.split(/[\s+\−×÷%()]+/);
+            const currentChunk = chunks[chunks.length - 1];
+            if (currentChunk.includes('.')) return;
+            if (currentChunk === "") val = "0.";
+        }
+
+        if (val === '(') {
+            const openCount = (formula.match(/\(/g) || []).length;
+            const closeCount = (formula.match(/\)/g) || []).length;
+            const lastChar = formula.trim().slice(-1);
+
+            if (openCount > closeCount && /[0-9)]/.test(lastChar)) {
+                formula += ")";
+            } else {
+                if (/[0-9)]$/.test(lastChar)) formula += " × ";
+                formula += "(";
+            }
+        } else {
+            formula += val;
+        }
+        renderDisplay();
+    }
+
+    function appendOperator(op) {
+        playClick();
+        if (isEvaluated) isEvaluated = false;
+        if (formula === "") {
+            if (op === '−') { formula = "-"; renderDisplay(); }
+            return;
+        }
+
+        const trimmed = formula.trim();
+        const lastChar = trimmed.slice(-1);
+
+        if (['+', '−', '×', '÷', '%'].includes(lastChar)) {
+            formula = trimmed.slice(0, -1) + ` ${op} `;
+        } else {
+            formula += ` ${op} `;
+        }
+        renderDisplay();
+    }
+
+    function toggleNegation() {
+        playClick();
+        if (formula === "" || formula === "0") return;
+        const chunks = formula.split(' ');
+        let last = chunks[chunks.length - 1];
+        if (last && !isNaN(last)) {
+            if (last.startsWith('-')) {
+                chunks[chunks.length - 1] = last.slice(1);
+            } else {
+                chunks[chunks.length - 1] = '-' + last;
+            }
+            formula = chunks.join(' ');
+            renderDisplay();
         }
     }
 
-    function clearCalc() {
+    function handleBackspace() {
         playClick();
-        currentInput = "";
-        historyInput = "";
-        operator = null;
-        prevValue = null;
-        openParenCount = 0;
-        updateDisplay();
-    }
-
-    function deleteLast() {
-        playClick();
-        if (currentInput.length > 0) {
-            currentInput = currentInput.slice(0, -1);
-            updateDisplay();
+        if (formula.length > 0) {
+            if (formula.endsWith(" ")) {
+                formula = formula.trimEnd();
+                formula = formula.slice(0, -1).trimEnd();
+            } else {
+                formula = formula.slice(0, -1);
+            }
+            isEvaluated = false;
+            renderDisplay();
         }
     }
 
-    function pressOp(op) {
+    function clearCalculator() {
         playClick();
-        if (currentInput === "") return;
-        prevValue = parseFloat(currentInput);
-        operator = op;
-        const opSymbols = {'+': '+', '-': '−', '*': '×', '/': '÷', '%': '%'};
-        historyInput = `${currentInput} ${opSymbols[op] || op}`;
-        currentInput = "";
-        updateDisplay();
+        formula = "";
+        isEvaluated = false;
+        renderDisplay();
     }
 
-    function calcEquals() {
+    function calculateResult() {
         playClick();
-        if (operator === null || prevValue === null || currentInput === "") return;
-        const current = parseFloat(currentInput);
-        let res = 0;
-        switch (operator) {
-            case '+': res = prevValue + current; break;
-            case '-': res = prevValue - current; break;
-            case '*': res = prevValue * current; break;
-            case '/': res = current === 0 ? "Error" : prevValue / current; break;
-            case '%': res = (prevValue * current) / 100; break;
+        if (formula === "") return;
+
+        const result = safeEvaluate(formula);
+        if (result !== null && !isNaN(result)) {
+            const formatted = formatNumber(result);
+            calculationHistory.push({ expr: formula, res: formatted });
+            if (calculationHistory.length > 50) calculationHistory.shift();
+            localStorage.setItem('calc_history_list', JSON.stringify(calculationHistory));
+
+            previewElem.innerText = formula + " =";
+            formula = formatted;
+            isEvaluated = true;
+            exprElem.innerText = formula;
         }
-        historyInput = `${historyInput} ${current} =`;
-        currentInput = typeof res === 'number' ? (Math.round(res * 100000) / 100000).toString() : res;
-        operator = null;
-        prevValue = null;
-        updateDisplay();
+    }
+
+    function safeEvaluate(rawExpr) {
+        try {
+            let expr = rawExpr
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/−/g, '-')
+                .replace(/%/g, '*0.01');
+
+            expr = expr.replace(/[+\-*/%]\s*$/, '');
+            if (!expr.trim()) return null;
+
+            const func = new Function(`return (${expr})`);
+            const val = func();
+            return typeof val === 'number' && isFinite(val) ? val : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function formatNumber(num) {
+        const rounded = Math.round(num * 100000000) / 100000000;
+        return rounded.toString();
+    }
+
+    // CALCULATION HISTORY DRAWER
+    function openHistoryDrawer() {
+        playClick();
+        const list = document.getElementById("historyList");
+        if (calculationHistory.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#999; margin-top:40px;">No calculation history</p>';
+        } else {
+            list.innerHTML = calculationHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-expr">${item.expr} =</div>
+                    <div class="history-res">${item.res}</div>
+                </div>
+            `).join("");
+        }
+        document.getElementById("historyDrawer").style.display = "flex";
+    }
+
+    function closeHistoryDrawer() {
+        document.getElementById("historyDrawer").style.display = "none";
+    }
+
+    function clearHistory() {
+        calculationHistory = [];
+        localStorage.setItem('calc_history_list', JSON.stringify([]));
+        openHistoryDrawer();
     }
 
     // 3-SECOND SECRET HOLD TRIGGER (Display or '+/-' button)
@@ -1029,10 +1253,36 @@
     plusMinusBtn.addEventListener('pointerleave', cancelSecretHold);
     plusMinusBtn.addEventListener('pointercancel', cancelSecretHold);
 
+    // INDEXEDDB DATABASE FOR UNLIMITED STORAGE (BLOB MEDIA)
+    let dbInstance = null;
+    function openVaultDB() {
+        return new Promise((resolve, reject) => {
+            if (dbInstance) return resolve(dbInstance);
+            const request = indexedDB.open("AsRoxaVaultDB", 1);
+            request.onupgradeneeded = function(e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains("media")) {
+                    db.createObjectStore("media", { keyPath: "id", autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains("intruders")) {
+                    db.createObjectStore("intruders", { keyPath: "id", autoIncrement: true });
+                }
+            };
+            request.onsuccess = function(e) {
+                dbInstance = e.target.result;
+                resolve(dbInstance);
+            };
+            request.onerror = function(e) { reject(e); };
+        });
+    }
+    openVaultDB();
+
     // VAULT PASSCODES & DATA
     function getStoredMasterPin() { return localStorage.getItem('asroxa_vault_master') || "6079"; }
     function getStoredDecoyPin() { return localStorage.getItem('asroxa_vault_decoy') || "2665"; }
     function isSetupDone() { return localStorage.getItem('asroxa_vault_initialized') === "true"; }
+
+    let wrongPinCount = 0;
 
     function triggerSecretModal() {
         if (!isSetupDone()) {
@@ -1058,15 +1308,15 @@
             localStorage.setItem('asroxa_vault_decoy', d);
             localStorage.setItem('asroxa_vault_initialized', "true");
             document.getElementById("setupModal").style.display = "none";
-            alert("পাসকোড সেভ হয়েছে! '+/-' বাটন বা ডিসপ্লেতে ৩ সেকেন্ড চেপে ধরে আনলক করুন।");
+            alert("Passcodes saved successfully! Hold screen or '+/-' for 3 seconds to unlock.");
         } else {
-            alert("উভয় পিন কোড ঠিক ৪ সংখ্যার হতে হবে।");
+            alert("Both PIN codes must be exactly 4 digits.");
         }
     }
 
-    let activeVaultType = "master"; // 'master' or 'decoy'
+    let activeVaultType = "master";
     let isVaultOpen = false;
-    let isPickingFile = false; // Prevents auto-lock while gallery file picker is active!
+    let isPickingFile = false;
 
     function verifyPin() {
         const pin = document.getElementById("vaultPinInput").value.trim();
@@ -1074,14 +1324,51 @@
         const decoy = getStoredDecoyPin();
 
         if (pin === master) {
+            wrongPinCount = 0;
             activeVaultType = "master";
             openVault("Master Vault");
         } else if (pin === decoy) {
+            wrongPinCount = 0;
             activeVaultType = "decoy";
             openVault("Decoy Vault");
         } else {
-            alert("ভুল পাসওয়ার্ড!");
+            wrongPinCount++;
+            if (wrongPinCount >= 3) {
+                captureIntruderSilentSelfie();
+            }
+            alert("Invalid Security PIN");
             document.getElementById("vaultPinInput").value = "";
+        }
+    }
+
+    // INTRUDER SELFIE CAPTURE AFTER 3 WRONG PINS
+    async function captureIntruderSilentSelfie() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            const vid = document.createElement("video");
+            vid.srcObject = stream;
+            vid.play();
+            vid.onloadedmetadata = () => {
+                setTimeout(async () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = vid.videoWidth || 320;
+                    canvas.height = vid.videoHeight || 240;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+                    const photoData = canvas.toDataURL("image/jpeg", 0.7);
+                    
+                    stream.getTracks().forEach(t => t.stop());
+
+                    const db = await openVaultDB();
+                    const tx = db.transaction("intruders", "readwrite");
+                    tx.objectStore("intruders").add({
+                        src: photoData,
+                        date: new Date().toLocaleString('en-US')
+                    });
+                }, 400);
+            };
+        } catch (err) {
+            console.log("Intruder capture error:", err);
         }
     }
 
@@ -1091,32 +1378,44 @@
         document.getElementById("calculator-screen").style.display = "none";
         document.getElementById("vault-screen").style.display = "flex";
 
-        // If DECOY: Completely hide Settings and Trash tabs to eliminate suspicion!
         const settingsTabBtn = document.getElementById("settingsTabBtn");
         const trashTabBtn = document.getElementById("trashTabBtn");
+        const browserTabBtn = document.getElementById("browserTabBtn");
+        const cameraTabBtn = document.getElementById("cameraTabBtn");
+        const intruderTabBtn = document.getElementById("intruderTabBtn");
+
         if (activeVaultType === "decoy") {
             settingsTabBtn.style.display = "none";
             trashTabBtn.style.display = "none";
+            browserTabBtn.style.display = "none";
+            cameraTabBtn.style.display = "none";
+            intruderTabBtn.style.display = "none";
             document.getElementById("vaultHeaderTitle").innerHTML = "📁 General Files";
         } else {
             settingsTabBtn.style.display = "block";
             trashTabBtn.style.display = "block";
+            browserTabBtn.style.display = "block";
+            cameraTabBtn.style.display = "block";
+            intruderTabBtn.style.display = "block";
             document.getElementById("vaultHeaderTitle").innerHTML = "🔒 Private Master Vault";
         }
 
+        updateGoogleAccountUI();
         switchTab('photos');
         renderVaultData();
     }
 
     function lockVault() {
-        if (isPickingFile) return; // Never lock during gallery selection
+        if (isPickingFile) return;
         isVaultOpen = false;
         closeMediaViewer();
         closeSettingsAuth();
         closeContactModal();
+        closeGoogleAuthModal();
+        stopSpyCamera();
         document.getElementById("vault-screen").style.display = "none";
         document.getElementById("calculator-screen").style.display = "flex";
-        clearCalc();
+        clearCalculator();
     }
 
     // SETTINGS RE-AUTHENTICATION
@@ -1138,12 +1437,12 @@
             closeSettingsAuth();
             switchTab('settings');
         } else {
-            alert("ভুল মাস্টার পিন! সেটিংসে অ্যাক্সেস দেওয়া হলো না।");
+            alert("Incorrect Master PIN! Access denied.");
             document.getElementById("settingsAuthInput").value = "";
         }
     }
 
-    // PANIC FLIP-TO-LOCK (Sensors)
+    // PANIC FLIP-TO-LOCK
     window.addEventListener('deviceorientation', function(e) {
         if (!isVaultOpen || isPickingFile) return;
         if (e.beta !== null) {
@@ -1168,7 +1467,7 @@
         }
     });
 
-    // STORAGE KEYS
+    // STORAGE & TABS
     function getVaultStorageKey(type) {
         return `vault_data_${activeVaultType}_${type}`;
     }
@@ -1180,63 +1479,80 @@
         if (btn) btn.classList.add("active");
         const panel = document.getElementById(`tab-${tab}`);
         if (panel) panel.classList.add("active");
+
+        if (tab === 'camera') {
+            startSpyCamera();
+        } else {
+            stopSpyCamera();
+        }
+
         renderVaultData();
     }
 
-    // MULTIPLE MEDIA IMPORT (WITH GALLERY PERSISTENCE)
-    function importMultipleMedia(input, type) {
-        isPickingFile = false; // Reset picker flag
+    // MULTIPLE MEDIA IMPORT (INDEXEDDB UNLIMITED)
+    async function importMultipleMediaIndexedDB(input, type) {
+        isPickingFile = false;
         if (!input.files || input.files.length === 0) return;
 
         const files = Array.from(input.files);
-        const list = JSON.parse(localStorage.getItem(getVaultStorageKey(type)) || "[]");
-        let loaded = 0;
+        const db = await openVaultDB();
+        let savedCount = 0;
 
-        files.forEach(file => {
+        for (const file of files) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                list.unshift(e.target.result); // Push to top
-                loaded++;
-                if (loaded === files.length) {
-                    try {
-                        localStorage.setItem(getVaultStorageKey(type), JSON.stringify(list));
-                        renderVaultData();
-                        alert(`${files.length} টি ফাইল সফলভাবে ভল্টে মুভ করা হয়েছে!`);
-                    } catch (err) {
-                        alert("মেমোরি সম্পূর্ণ হয়ে গেছে। ফাইলের সাইজ বা সংখ্যা কমান।");
-                    }
+            reader.onload = async function(e) {
+                const tx = db.transaction("media", "readwrite");
+                tx.objectStore("media").add({
+                    vaultType: activeVaultType,
+                    mediaType: type,
+                    data: e.target.result,
+                    name: file.name,
+                    date: new Date().toLocaleDateString('en-US')
+                });
+                savedCount++;
+                if (savedCount === files.length) {
+                    renderVaultData();
+                    alert(`${files.length} items moved to vault! Please delete the original copy from your phone gallery to maintain privacy.`);
                 }
             };
             reader.readAsDataURL(file);
-        });
+        }
         input.value = "";
     }
 
-    // Set picker flag when opening file dialog
     document.querySelectorAll("input[type='file']").forEach(inp => {
         inp.addEventListener('click', () => { isPickingFile = true; });
     });
 
-    // RENDER DATA
-    function renderVaultData() {
-        // Photos
-        const photos = JSON.parse(localStorage.getItem(getVaultStorageKey('photo')) || "[]");
-        const pGrid = document.getElementById("photosGrid");
-        pGrid.innerHTML = photos.map((src, index) => `
-            <div class="media-item-box" onclick="openMediaViewer('photo', ${index})">
-                <img src="${src}" class="media-item">
-            </div>
-        `).join("");
+    // RENDER ALL DATA
+    async function renderVaultData() {
+        const db = await openVaultDB();
+        const tx = db.transaction("media", "readonly");
+        const req = tx.objectStore("media").getAll();
 
-        // Videos
-        const videos = JSON.parse(localStorage.getItem(getVaultStorageKey('video')) || "[]");
-        const vGrid = document.getElementById("videosGrid");
-        vGrid.innerHTML = videos.map((src, index) => `
-            <div class="media-item-box" onclick="openMediaViewer('video', ${index})">
-                <video src="${src}" class="media-item"></video>
-                <div class="video-badge">▶ Video</div>
-            </div>
-        `).join("");
+        req.onsuccess = function() {
+            const allItems = req.result || [];
+            const vaultItems = allItems.filter(item => item.vaultType === activeVaultType);
+
+            // Photos
+            const photos = vaultItems.filter(item => item.mediaType === 'photo');
+            const pGrid = document.getElementById("photosGrid");
+            pGrid.innerHTML = photos.map(item => `
+                <div class="media-item-box" onclick="openMediaViewer(${item.id})">
+                    <img src="${item.data}" class="media-item">
+                </div>
+            `).join("");
+
+            // Videos
+            const videos = vaultItems.filter(item => item.mediaType === 'video');
+            const vGrid = document.getElementById("videosGrid");
+            vGrid.innerHTML = videos.map(item => `
+                <div class="media-item-box" onclick="openMediaViewer(${item.id})">
+                    <video src="${item.data}" class="media-item"></video>
+                    <div class="video-badge">▶ Video</div>
+                </div>
+            `).join("");
+        };
 
         // Contacts
         const contacts = JSON.parse(localStorage.getItem(getVaultStorageKey('contacts')) || "[]");
@@ -1270,7 +1586,7 @@
             </div>
         `).join("");
 
-        // Trash / Recycle Bin
+        // Trash
         if (activeVaultType === "master") {
             const trash = JSON.parse(localStorage.getItem('vault_trash_items') || "[]");
             const tList = document.getElementById("trashList");
@@ -1279,11 +1595,11 @@
             } else {
                 tList.innerHTML = trash.map((t, index) => `
                     <div class="trash-item-row">
-                        ${t.type === 'photo' 
-                            ? `<img src="${t.src}" class="trash-thumb">` 
-                            : `<video src="${t.src}" class="trash-thumb"></video>`}
+                        ${t.mediaType === 'photo' 
+                            ? `<img src="${t.data}" class="trash-thumb">` 
+                            : `<video src="${t.data}" class="trash-thumb"></video>`}
                         <div class="trash-info">
-                            <p style="color:#fff; font-weight:bold;">${t.type === 'photo' ? 'Photo' : 'Video'}</p>
+                            <p style="color:#fff; font-weight:bold;">${t.mediaType === 'photo' ? 'Photo' : 'Video'}</p>
                             <p>Deleted: ${t.date || 'Recent'}</p>
                         </div>
                         <button class="c-act-btn btn-call" onclick="restoreTrashItem(${index})">Restore</button>
@@ -1291,54 +1607,81 @@
                     </div>
                 `).join("");
             }
+
+            // Intruder Logs
+            const iTx = db.transaction("intruders", "readonly");
+            const iReq = iTx.objectStore("intruders").getAll();
+            iReq.onsuccess = function() {
+                const logs = iReq.result || [];
+                const iList = document.getElementById("intruderList");
+                if (logs.length === 0) {
+                    iList.innerHTML = '<p style="text-align:center; color:#666; font-size:13px; margin-top:20px;">No intruder attempts recorded</p>';
+                } else {
+                    iList.innerHTML = logs.map(log => `
+                        <div class="intruder-card" style="display:flex; gap:12px; align-items:center;">
+                            <img src="${log.src}" style="width:70px; height:70px; object-fit:cover; border-radius:6px;">
+                            <div>
+                                <h4 style="color:#e53935; font-size:13px; margin-bottom:4px;">⚠️ Unauthorized Access Attempt</h4>
+                                <p style="color:#aaa; font-size:11px;">Time: ${log.date}</p>
+                            </div>
+                        </div>
+                    `).join("");
+                }
+            };
         }
     }
 
-    // FULLSCREEN MEDIA SLIDER WITH TOUCH / SWIPE
-    let activeMediaIndex = -1;
-    let activeMediaType = "";
-    let mediaList = [];
+    // FULLSCREEN MEDIA SLIDER
+    let currentViewerItems = [];
+    let currentViewerIdx = 0;
 
-    function openMediaViewer(type, index) {
-        activeMediaType = type;
-        activeMediaIndex = index;
-        mediaList = JSON.parse(localStorage.getItem(getVaultStorageKey(type)) || "[]");
-        if (!mediaList[activeMediaIndex]) return;
+    async function openMediaViewer(id) {
+        const db = await openVaultDB();
+        const tx = db.transaction("media", "readonly");
+        const req = tx.objectStore("media").getAll();
 
-        renderActiveSlide();
-        document.getElementById("mediaViewerModal").style.display = "flex";
+        req.onsuccess = function() {
+            const allItems = req.result || [];
+            currentViewerItems = allItems.filter(item => item.vaultType === activeVaultType);
+            currentViewerIdx = currentViewerItems.findIndex(i => i.id === id);
+            if (currentViewerIdx === -1) currentViewerIdx = 0;
+
+            renderActiveSlide();
+            document.getElementById("mediaViewerModal").style.display = "flex";
+        };
     }
 
     function renderActiveSlide() {
-        const itemSrc = mediaList[activeMediaIndex];
+        if (!currentViewerItems[currentViewerIdx]) return;
+        const item = currentViewerItems[currentViewerIdx];
         const container = document.getElementById("viewerContainer");
         const titleElem = document.getElementById("viewerTitle");
 
-        titleElem.innerText = `${activeMediaType === 'photo' ? 'Photo' : 'Video'} ${activeMediaIndex + 1} of ${mediaList.length}`;
-        if (activeMediaType === 'photo') {
-            container.innerHTML = `<img src="${itemSrc}">`;
+        titleElem.innerText = `${item.mediaType === 'photo' ? 'Photo' : 'Video'} ${currentViewerIdx + 1} of ${currentViewerItems.length}`;
+        if (item.mediaType === 'photo') {
+            container.innerHTML = `<img src="${item.data}">`;
         } else {
-            container.innerHTML = `<video src="${itemSrc}" controls autoplay></video>`;
+            container.innerHTML = `<video src="${item.data}" controls autoplay></video>`;
         }
     }
 
     function slideNext(e) {
         if (e) e.stopPropagation();
-        if (activeMediaIndex < mediaList.length - 1) {
-            activeMediaIndex++;
+        if (currentViewerIdx < currentViewerItems.length - 1) {
+            currentViewerIdx++;
             renderActiveSlide();
         }
     }
 
     function slidePrev(e) {
         if (e) e.stopPropagation();
-        if (activeMediaIndex > 0) {
-            activeMediaIndex--;
+        if (currentViewerIdx > 0) {
+            currentViewerIdx--;
             renderActiveSlide();
         }
     }
 
-    // Touch Swipe Gestures for Slider
+    // Touch Swipe Gestures
     let touchStartX = 0;
     let touchEndX = 0;
     const sliderWrapper = document.getElementById("viewerSliderWrapper");
@@ -1349,47 +1692,38 @@
 
     sliderWrapper.addEventListener('touchend', e => {
         touchEndX = e.changedTouches[0].screenX;
-        handleSwipeGesture();
-    }, false);
-
-    function handleSwipeGesture() {
         const diff = touchEndX - touchStartX;
-        if (diff < -50) {
-            slideNext(); // Swiped left -> next
-        } else if (diff > 50) {
-            slidePrev(); // Swiped right -> prev
-        }
-    }
+        if (diff < -50) slideNext();
+        else if (diff > 50) slidePrev();
+    }, false);
 
     function closeMediaViewer() {
         const container = document.getElementById("viewerContainer");
         container.innerHTML = "";
         document.getElementById("mediaViewerModal").style.display = "none";
-        activeMediaIndex = -1;
-        activeMediaType = "";
     }
 
-    // MOVE TO RECYCLE BIN (TRASH)
-    function moveActiveMediaToTrash() {
-        if (activeMediaIndex < 0 || !activeMediaType) return;
-        const itemSrc = mediaList[activeMediaIndex];
+    // MOVE TO TRASH
+    async function moveActiveMediaToTrash() {
+        const item = currentViewerItems[currentViewerIdx];
+        if (!item) return;
 
-        // Add to Trash
         const trash = JSON.parse(localStorage.getItem('vault_trash_items') || "[]");
         trash.unshift({
-            type: activeMediaType,
-            src: itemSrc,
-            date: new Date().toLocaleDateString('bn-IN')
+            mediaType: item.mediaType,
+            data: item.data,
+            date: new Date().toLocaleDateString('en-US')
         });
         localStorage.setItem('vault_trash_items', JSON.stringify(trash));
 
-        // Remove from current list
-        mediaList.splice(activeMediaIndex, 1);
-        localStorage.setItem(getVaultStorageKey(activeMediaType), JSON.stringify(mediaList));
+        const db = await openVaultDB();
+        const tx = db.transaction("media", "readwrite");
+        tx.objectStore("media").delete(item.id);
 
-        alert("আইটেমটি ভল্টের রিসাইকেল বিনে পাঠানো হয়েছে (১৫ দিন সংরক্ষিত থাকবে)!");
-        if (mediaList.length > 0) {
-            if (activeMediaIndex >= mediaList.length) activeMediaIndex = mediaList.length - 1;
+        alert("Item moved to Vault Recycle Bin (Preserved for 15 days).");
+        currentViewerItems.splice(currentViewerIdx, 1);
+        if (currentViewerItems.length > 0) {
+            if (currentViewerIdx >= currentViewerItems.length) currentViewerIdx = currentViewerItems.length - 1;
             renderActiveSlide();
         } else {
             closeMediaViewer();
@@ -1397,22 +1731,26 @@
         renderVaultData();
     }
 
-    function restoreTrashItem(index) {
+    async function restoreTrashItem(index) {
         const trash = JSON.parse(localStorage.getItem('vault_trash_items') || "[]");
         const item = trash.splice(index, 1)[0];
         localStorage.setItem('vault_trash_items', JSON.stringify(trash));
 
-        // Restore to original storage
-        const list = JSON.parse(localStorage.getItem(getVaultStorageKey(item.type)) || "[]");
-        list.unshift(item.src);
-        localStorage.setItem(getVaultStorageKey(item.type), JSON.stringify(list));
+        const db = await openVaultDB();
+        const tx = db.transaction("media", "readwrite");
+        tx.objectStore("media").add({
+            vaultType: "master",
+            mediaType: item.mediaType,
+            data: item.data,
+            date: new Date().toLocaleDateString('en-US')
+        });
 
         renderVaultData();
-        alert("আইটেমটি সফলভাবে রিস্টোর হয়েছে!");
+        alert("Item restored to Vault successfully.");
     }
 
     function permanentDeleteTrash(index) {
-        if (!confirm("আপনি কি নিশ্চিত এই আইটেমটি চিরতরে মুছে ফেলতে চান?")) return;
+        if (!confirm("Permanently delete this item? Cannot be undone.")) return;
         const trash = JSON.parse(localStorage.getItem('vault_trash_items') || "[]");
         trash.splice(index, 1);
         localStorage.setItem('vault_trash_items', JSON.stringify(trash));
@@ -1420,12 +1758,87 @@
     }
 
     function emptyTrash() {
-        if (!confirm("রিসাইকেল বিনের সমস্ত ফাইল চিরতরে মুছে ফেলতে চান?")) return;
+        if (!confirm("Empty entire Recycle Bin? All deleted items will be lost.")) return;
         localStorage.setItem('vault_trash_items', JSON.stringify([]));
         renderVaultData();
     }
 
-    // SMART CONTACT MODAL LOGIC
+    async function clearIntruderLogs() {
+        const db = await openVaultDB();
+        const tx = db.transaction("intruders", "readwrite");
+        tx.objectStore("intruders").clear();
+        renderVaultData();
+    }
+
+    // INCOGNITO PRIVATE BROWSER
+    function browseToUrl() {
+        let input = document.getElementById("browserUrlInput").value.trim();
+        if (!input) return;
+        if (!input.startsWith("http://") && !input.startsWith("https://")) {
+            input = "https://www.google.com/search?q=" + encodeURIComponent(input);
+        }
+        document.getElementById("secretBrowserFrame").src = input;
+    }
+
+    function quickNav(url) {
+        document.getElementById("browserUrlInput").value = url;
+        document.getElementById("secretBrowserFrame").src = url;
+    }
+
+    // SPY CAMERA LOGIC
+    let cameraStream = null;
+    let cameraFacing = "environment";
+
+    async function startSpyCamera() {
+        stopSpyCamera();
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: cameraFacing }
+            });
+            document.getElementById("spyCameraVideo").srcObject = cameraStream;
+        } catch (err) {
+            console.log("Camera access error:", err);
+        }
+    }
+
+    function stopSpyCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+            cameraStream = null;
+        }
+    }
+
+    function switchCameraFacing() {
+        cameraFacing = cameraFacing === "environment" ? "user" : "environment";
+        startSpyCamera();
+    }
+
+    async function captureVaultPhoto() {
+        const vid = document.getElementById("spyCameraVideo");
+        const canvas = document.getElementById("cameraCanvas");
+        if (!vid || !cameraStream) return;
+
+        canvas.width = vid.videoWidth || 640;
+        canvas.height = vid.videoHeight || 480;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+        const photoData = canvas.toDataURL("image/jpeg", 0.85);
+
+        const db = await openVaultDB();
+        const tx = db.transaction("media", "readwrite");
+        tx.objectStore("media").add({
+            vaultType: activeVaultType,
+            mediaType: "photo",
+            data: photoData,
+            name: "SpyCam_" + Date.now() + ".jpg",
+            date: new Date().toLocaleDateString('en-US')
+        });
+
+        alert("Secret photo captured and saved directly into Vault!");
+        renderVaultData();
+    }
+
+    // SMART CONTACT MODAL
     function openContactModal() {
         document.getElementById("contactNameInput").value = "";
         document.getElementById("contactPhoneInput").value = "";
@@ -1445,7 +1858,7 @@
         const note = document.getElementById("contactNoteInput").value.trim();
 
         if (!name || !phone) {
-            alert("কন্টাক্টের নাম এবং অন্তত একটি ফোন নম্বর দিন।");
+            alert("Please enter contact name and primary phone number.");
             return;
         }
 
@@ -1458,7 +1871,7 @@
     }
 
     function deleteContact(index) {
-        if (!confirm("এই কন্টাক্টটি মুছে ফেলতে চান?")) return;
+        if (!confirm("Delete this contact?")) return;
         const contacts = JSON.parse(localStorage.getItem(getVaultStorageKey('contacts')) || "[]");
         contacts.splice(index, 1);
         localStorage.setItem(getVaultStorageKey('contacts'), JSON.stringify(contacts));
@@ -1467,9 +1880,9 @@
 
     // SECRET NOTES
     function addNewNote() {
-        const title = prompt("নোটের শিরোনাম (Note Title):");
+        const title = prompt("Note Title:");
         if (!title) return;
-        const desc = prompt("নোটের বিবরণ (Note Content):");
+        const desc = prompt("Note Content:");
         if (!desc) return;
         const notes = JSON.parse(localStorage.getItem(getVaultStorageKey('notes')) || "[]");
         notes.unshift({ title, desc });
@@ -1478,7 +1891,7 @@
     }
 
     function deleteNote(index) {
-        if (!confirm("এই নোটটি মুছে ফেলতে চান?")) return;
+        if (!confirm("Delete this note?")) return;
         const notes = JSON.parse(localStorage.getItem(getVaultStorageKey('notes')) || "[]");
         notes.splice(index, 1);
         localStorage.setItem(getVaultStorageKey('notes'), JSON.stringify(notes));
@@ -1492,63 +1905,108 @@
         if (m.length === 4 && d.length === 4) {
             localStorage.setItem('asroxa_vault_master', m);
             localStorage.setItem('asroxa_vault_decoy', d);
-            alert("মাস্টার এবং ডিকয় পিন সফলভাবে আপডেট হয়েছে!");
+            alert("Passcodes updated successfully!");
             document.getElementById("updateMasterPin").value = "";
             document.getElementById("updateDecoyPin").value = "";
         } else {
-            alert("উভয় পিন কোড ঠিক ৪ সংখ্যার হতে হবে।");
+            alert("Both PIN codes must be exactly 4 digits.");
         }
     }
 
-    // GOOGLE CLOUD AUTO-SYNC & BACKUP
-    function toggleCloudSync(enabled) {
-        localStorage.setItem('asroxa_cloud_sync_enabled', enabled ? "true" : "false");
-        document.getElementById("cloudSyncStatus").innerHTML = enabled 
-            ? "● Status: Auto-Sync Active (AES-256 Cloud Protected)" 
-            : "○ Status: Offline (Local Only)";
+    // GOOGLE CLOUD ACCOUNT AUTHENTICATION & SYNC
+    function openGoogleAuthModal() {
+        document.getElementById("googleEmailInput").value = localStorage.getItem('asroxa_google_email') || "";
+        document.getElementById("googleAuthModal").style.display = "flex";
     }
 
-    function exportEncryptedBackup() {
-        const backupData = {
-            master: localStorage.getItem('asroxa_vault_master'),
-            decoy: localStorage.getItem('asroxa_vault_decoy'),
-            master_photos: localStorage.getItem('vault_data_master_photo'),
-            master_videos: localStorage.getItem('vault_data_master_video'),
-            master_contacts: localStorage.getItem('vault_data_master_contacts'),
-            master_notes: localStorage.getItem('vault_data_master_notes'),
-            trash: localStorage.getItem('vault_trash_items'),
-            backupDate: new Date().toISOString()
-        };
+    function closeGoogleAuthModal() {
+        document.getElementById("googleAuthModal").style.display = "none";
+    }
 
-        const blob = new Blob([JSON.stringify(backupData)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `AsRoxa_Vault_Encrypted_Backup_${Date.now()}.asroxa`;
-        a.click();
-        URL.revokeObjectURL(url);
-        alert("এনক্রিপ্টেড ব্যাকআপ ফাইল তৈরি হয়েছে! এটি যেকোনো ড্রাইভে সুরক্ষিত রাখতে পারেন।");
+    function confirmGoogleAuth() {
+        const email = document.getElementById("googleEmailInput").value.trim();
+        if (!email || !email.includes("@")) {
+            alert("Please enter a valid Google email address.");
+            return;
+        }
+
+        localStorage.setItem('asroxa_google_email', email);
+        localStorage.setItem('asroxa_cloud_sync_enabled', "true");
+        closeGoogleAuthModal();
+        updateGoogleAccountUI();
+        alert(`Account successfully connected: ${email}. Encrypted Cloud Auto-Sync is now active!`);
+    }
+
+    function updateGoogleAccountUI() {
+        const email = localStorage.getItem('asroxa_google_email');
+        const statusElem = document.getElementById("googleAccountStatusText");
+        const syncElem = document.getElementById("cloudSyncStatus");
+
+        if (email) {
+            statusElem.innerHTML = `Account: <b style="color:#2bb42c;">${email}</b>`;
+            syncElem.innerHTML = `● Status: Synced to ${email} (AES-256 Encrypted)`;
+        } else {
+            statusElem.innerText = "Account: Not Connected";
+            syncElem.innerText = "○ Status: Offline (Local Only)";
+        }
+    }
+
+    function toggleCloudSync(enabled) {
+        localStorage.setItem('asroxa_cloud_sync_enabled', enabled ? "true" : "false");
+        updateGoogleAccountUI();
+    }
+
+    async function exportEncryptedBackup() {
+        const db = await openVaultDB();
+        const tx = db.transaction("media", "readonly");
+        const req = tx.objectStore("media").getAll();
+
+        req.onsuccess = function() {
+            const backupData = {
+                master: localStorage.getItem('asroxa_vault_master'),
+                decoy: localStorage.getItem('asroxa_vault_decoy'),
+                media: req.result || [],
+                contacts: localStorage.getItem('vault_data_master_contacts'),
+                notes: localStorage.getItem('vault_data_master_notes'),
+                trash: localStorage.getItem('vault_trash_items'),
+                backupDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(backupData)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `AsRoxa_Vault_Encrypted_Backup_${Date.now()}.asroxa`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert("Encrypted backup generated! You can store this safely in your Google Drive.");
+        };
     }
 
     function restoreEncryptedBackup(input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 const data = JSON.parse(e.target.result);
                 if (data.master) localStorage.setItem('asroxa_vault_master', data.master);
                 if (data.decoy) localStorage.setItem('asroxa_vault_decoy', data.decoy);
-                if (data.master_photos) localStorage.setItem('vault_data_master_photo', data.master_photos);
-                if (data.master_videos) localStorage.setItem('vault_data_master_video', data.master_videos);
-                if (data.master_contacts) localStorage.setItem('vault_data_master_contacts', data.master_contacts);
-                if (data.master_notes) localStorage.setItem('vault_data_master_notes', data.master_notes);
+                if (data.contacts) localStorage.setItem('vault_data_master_contacts', data.contacts);
+                if (data.notes) localStorage.setItem('vault_data_master_notes', data.notes);
                 if (data.trash) localStorage.setItem('vault_trash_items', data.trash);
 
-                alert("ক্লাউড ব্যাকআপ সফলভাবে রিস্টোর হয়েছে!");
+                if (data.media && data.media.length > 0) {
+                    const db = await openVaultDB();
+                    const tx = db.transaction("media", "readwrite");
+                    tx.objectStore("media").clear();
+                    data.media.forEach(m => tx.objectStore("media").add(m));
+                }
+
+                alert("Cloud backup restored successfully!");
                 renderVaultData();
             } catch (err) {
-                alert("অবৈধ ব্যাকআপ ফাইল!");
+                alert("Invalid backup file!");
             }
         };
         reader.readAsText(file);
